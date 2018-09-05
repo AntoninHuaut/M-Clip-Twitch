@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>MClip Twitch Options</title>
+    <link type="text/css" rel="stylesheet" href="css/materialize.css" media="screen,projection" />
+</head>
+
+<body class="blue-grey lighten-5">
+    <script type="text/javascript" src="../js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="js/materialize.js"></script>
+    <div class="row valign-wrapper">
+        <div class="col s10 m6 valign center-block">
+            <div class="card grey lighten-4">
+                <div class="card-content black-text">
+                    <span class="card-title">Options</span>
+                    <div class="section" style="font-size: 11pt;">
+                        <p id="redirection.description" class="lang">Redirection du Clip: </p>
+                        <div class="switch">
+                            <label>
+                                Page général
+                                <input id="redirection" type="checkbox">
+                                <span class="lever "></span>
+                                MP4 (La meilleur qualité)
+                            </label>
+                        </div>
+                    </div>
+                    <div class="section" style="font-size: 11pt;">
+                        <p class="lang">Langue: </p>
+                        <div class="switch">
+                            <label>
+                                Français
+                                <input id="language" type="checkbox">
+                                <span class="lever "></span>
+                                English
+                            </label>
+                        </div>
+                    </div>
+                    <div class="section" style="font-size: 11pt;">
+                        <p>Format (Nom du fichier) du MP4: </p>
+                        <div class="text">
+                            <label>
+                                Balises disponibles: {CLIPEUR} {DATE} {DUREE} {JEU} {NOMBRE} {SLUG} {STREAMEUR} {TITRE}
+                                {VUES}
+                                <input id="formatMP4" type="text"> {NOMBRE}
+                                <span style="font-style: italic;">Augmente de 1 à chaque téléchargement de clip,
+                                    réinitialise lorsque le navigateur est relancé</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="section" style="font-size: 11pt;">
+                        <p>Format de la balise {DATE}: </p>
+                        <div class="text">
+                            <label>
+                                <input id="formatDate" type="text">
+                                <a href="https://github.com/abritinthebay/datejs/wiki/Format-Specifiers">Liste de mise en forme disponible</a>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-action">
+                    <button id="save" class="btn waves-effect waves-light" type="submit" name="action" style="font-size: 11pt;">Sauvegarder</button>
+                    <a href="http://clips.maner.fr/update.html" style="margin-left: 61.5%;"><button class="btn waves-effect waves-light"
+                            type="submit" name="action" style="font-size: 11pt;">Changelog</button></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../js/lang.js"></script>
+    <script src="js/options.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,54 @@
+{
+  "manifest_version": 2,
+  "name": "M Clip Twitch",
+  "description": "Télécharger en mp4 et accéder rapidement au vod d'un clip Twitch",
+  "version": "1.4.1",
+  "options_ui": {
+    "page": "options/options.html",
+    "open_in_tab": true
+  },
+  "browser_action": {
+    "default_icon": "images/icon.png"
+  },
+  "icons": {
+    "128": "images/icon.png"
+  },
+  "background": {
+    "scripts": [
+      "js/jquery-3.3.1.min.js",
+      "js/moment.js",
+      "js/lang.js",
+      "background.js"
+    ]
+  },
+  "content_scripts": [
+    {
+      "run_at": "document_end",
+      "matches": [
+        "*://clips.twitch.tv/*"
+      ],
+      "js": [
+        "twitch.js"
+      ]
+    }
+  ],
+  "commands": {
+    "download-clip": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+H",
+        "mac": "Command+Shift+H"
+      },
+      "description": "Permet de télécharger le clip Twitch depuis sa page"
+    }
+  },
+  "permissions": [
+    "tabs",
+    "https://clips.twitch.tv/*",
+    "downloads",
+    "storage",
+    "contextMenus"
+  ],
+  "web_accessible_resources": [
+    "images/*"
+  ]
+}
