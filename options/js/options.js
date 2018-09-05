@@ -1,19 +1,26 @@
 document.addEventListener("DOMContentLoaded", function (event) {
-  let list = document.getElementsByClassName("lang");
+  setTimeout(function () {
+    let list = document.getElementsByClassName("lang");
+    let langFile = (!chrome.extension.getBackgroundPage().lang ? fr : en);
 
-  for (i = 0; i < list.length; i++) {
-    let element = list[i];
-    let id = element.id;
+    for (let i = 0; i < list.length; i++) {
+      let element = list[i];
+      element.innerText = getLang(langFile.options, element.id);
+    }
 
-    console.log(element.id, getLang(id));
-  }
+    let tagList = "";
+
+    for (let i = 0; i < langFile.formatFile.length; i++)
+      tagList += " " + langFile.formatFile[i];
+
+    document.getElementById("formatFile.tagList").innerText = tagList;
+  }, 50);
 });
 
-function getLang(id) {
-  let json = (!chrome.extension.getBackgroundPage().lang ? fr : en).options;
+function getLang(json, id) {
   let list = id.split('.');
 
-  for (i = 0; i < list.length; i++)
+  for (let i = 0; i < list.length; i++)
     json = json[list[i]];
 
   return json;
@@ -73,4 +80,4 @@ function restore_options() {
   });
 }
 document.addEventListener('DOMContentLoaded', restore_options);
-document.getElementById('save').addEventListener('click', save_options);
+document.getElementById('bouttons.save').addEventListener('click', save_options);
