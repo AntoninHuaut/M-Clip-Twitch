@@ -8,6 +8,7 @@ var fr = {
         "langue": "Langue",
         "formatFile": {
             "description": "Format (Nom du fichier) du fichier MP4: ",
+            "browser_issue": "Opera ne supporte pas cette fonctionnalité",
             "balise": "Balises disponibles:",
             "nbInfos": "{NOMBRE}",
             "nbInfosItalic": "Augmente de 1 à chaque téléchargement de clip, réinitialise lorsque le navigateur est relancé"
@@ -19,6 +20,10 @@ var fr = {
         "bouttons": {
             "save": "Sauvegarder",
             "change": "Changelog"
+        },
+        "notif": {
+            "error_caract": "Erreur ! Le format présente des caractères non autorisés (/ ou \\' + ')",
+            "save_param": "Paramètres sauvegardés !"
         }
     },
     "formatFile": [
@@ -44,6 +49,7 @@ var en = {
         "langue": "Language",
         "formatFile": {
             "description": "Format (File name) of the MP4 file: ",
+            "browser_issue": "Opera does not support this feature",
             "balise": "Available tags:",
             "nbInfos": "{NUMBER}",
             "nbInfosItalic": "Increases by 1 each time a clip is downloaded, resets when the browser is restarted"
@@ -55,6 +61,10 @@ var en = {
         "bouttons": {
             "save": "Save",
             "change": "Changelog"
+        },
+        "notif": {
+            "error_caract": "Error! The format has unauthorized characters (/ or \\' + ')",
+            "save_param": "Saved settings!"
         }
     },
     "formatFile": [

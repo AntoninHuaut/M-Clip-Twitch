@@ -1,10 +1,16 @@
+var langFile;
+
 document.addEventListener("DOMContentLoaded", function (event) {
   setTimeout(function () {
     let list = document.getElementsByClassName("lang");
-    let langFile = (!chrome.extension.getBackgroundPage().lang ? fr : en);
+    langFile = (!chrome.extension.getBackgroundPage().lang ? fr : en);
 
     for (let i = 0; i < list.length; i++) {
       let element = list[i];
+
+      if (element.id == "formatFile.browser_issue" && getBrowser() != 1)
+        continue;
+
       element.innerText = getLang(langFile.options, element.id);
     }
 
@@ -14,7 +20,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
       tagList += " " + langFile.formatFile[i];
 
     document.getElementById("formatFile.tagList").innerText = tagList;
-  }, 50);
+    restore_options();
+  }, 10);
 });
 
 function getLang(json, id) {
@@ -33,7 +40,7 @@ function save_options() {
   let pFormatMP4 = document.getElementById('formatMP4').value;
   let pFormatDate = document.getElementById('formatDate').value;
   if (invalidChars.some(char => pFormatMP4.indexOf(char) > -1)) {
-    Materialize.toast('Erreur ! Le format présente des caractères non autorisés (/ ou \\' + ')', 3000)
+    Materialize.toast(langFile.options.notif.error_caract, 3000)
     return;
   }
 
@@ -55,7 +62,7 @@ function save_options() {
     formatDate: pFormatDate
   }, function () {
     // Update status to let user know options were saved.
-    Materialize.toast('Paramètres sauvegardés !', 1500);
+    Materialize.toast(langFile.options.notif.save_param, 1500);
 
     if (hasChange)
       window.location.reload(false);
@@ -70,7 +77,7 @@ function restore_options() {
   chrome.storage.local.get({
     redirection: false,
     language: false,
-    formatMP4: "{STREAMEUR}.{JEU} {TITRE}",
+    formatMP4: "{STREAMER}.{GAME} {TITLE}",
     formatDate: "DD-MM-YYYY"
   }, function (items) {
     document.getElementById('redirection').checked = items.redirection;
@@ -79,5 +86,9 @@ function restore_options() {
     document.getElementById('formatDate').value = items.formatDate;
   });
 }
-document.addEventListener('DOMContentLoaded', restore_options);
+
 document.getElementById('bouttons.save').addEventListener('click', save_options);
+
+function getBrowser() {
+  return (navigator.userAgent.indexOf(' OPR/') > 0) ? 1 : (typeof InstallTrigger !== 'undefined') ? 3 : (!!window.chrome) ? 2 : 4;
+}

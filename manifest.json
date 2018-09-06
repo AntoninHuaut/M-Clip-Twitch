@@ -38,7 +38,7 @@
         "default": "Ctrl+Shift+H",
         "mac": "Command+Shift+H"
       },
-      "description": "Permet de télécharger le clip Twitch depuis sa page"
+      "description": "Allows you to download the Twitch clip from its page"
     }
   },
   "permissions": [

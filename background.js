@@ -75,15 +75,10 @@ chrome.runtime.onMessage.addListener(
 		if (request.greeting == "startDownloadMP4")
 			downloadMP4(request.slug);
 		else if (request.greeting == "request-lang") {
-			chrome.tabs.query({
-				active: true,
-				currentWindow: true
-			}, function (tabs) {
-				chrome.tabs.sendMessage(tabs[0].id, {
-					greeting: "get-lang",
-					lang: lang
-				}, function (response) {});
-			});
+			chrome.tabs.sendMessage(sender.tab.id, {
+				greeting: "get-lang",
+				lang: lang
+			}, function (response) {});
 		}
 	});
 
@@ -115,7 +110,7 @@ function downloadMP4(slug) {
 		})
 	).then(function () {
 		chrome.storage.local.get({
-			formatMP4: "{STREAMEUR}.{JEU} {TITRE}",
+			formatMP4: "{STREAMER}.{GAME} {TITLE}",
 			formatDate: "DD-MM-YYYY"
 		}, function (items) {
 			let replaces = [resClip.curator_display_name, moment(new Date(resClip.created_at)).format(items.formatDate),
