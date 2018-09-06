@@ -139,22 +139,9 @@ String.prototype.rep = function (replaces) {
 	return str;
 };
 
-
-function checkChangelog() {
-	let version = chrome.runtime.getManifest().version;
-
-	chrome.storage.local.get({
-		localVersion: "0.0.0"
-	}, function (items) {
-		if (items.localVersion != version)
-			chrome.storage.local.set({
-				localVersion: version,
-			}, function () {
-				chrome.tabs.create({
-					url: "http://clips.maner.fr/update.html"
-				});
-			});
-	});
-};
-
-checkChangelog();
+chrome.runtime.onInstalled.addListener(details => {
+	if (details.reason == "update" || details.reason == "install")
+		chrome.tabs.create({
+			url: "http://clips.maner.fr/update_" + (!lang ? "fr" : "en") + ".html"
+		});
+});
