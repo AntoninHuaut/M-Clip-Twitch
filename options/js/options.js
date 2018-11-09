@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
     for (let i = 0; i < list.length; i++) {
       let element = list[i];
 
-      if (element.id == "formatFile.browser_issue" && getBrowser() != 1)
+      if (element.id == "formatFile.browser_issue" /*&& getBrowser() != 1*/) // Opera supporte maintenant la fonctionnalité
         continue;
 
       element.innerText = getLang(langFile.options, element.id);
@@ -47,7 +47,7 @@ function save_options() {
   let hasChange = false;
 
   chrome.storage.local.get({
-    language: false
+    language: true
   }, function (items) {
     if (items.language != pLanguage) {
       hasChange = true;
@@ -76,7 +76,7 @@ var invalidChars = ['/', '\\'];
 function restore_options() {
   chrome.storage.local.get({
     redirection: false,
-    language: false,
+    language: true,
     formatMP4: "{STREAMER}.{GAME} {TITLE}",
     formatDate: "DD-MM-YYYY"
   }, function (items) {
