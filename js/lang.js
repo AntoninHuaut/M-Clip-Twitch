@@ -15,7 +15,7 @@ var fr = {
         },
         "formatDate": {
             "description": "Format de la balise {DATE}: ",
-            "listeFormat": "Liste de mise en forme disponible"
+            "listeFormat": "Liste de mise en forme disponible pour la balise DATE"
         },
         "bouttons": {
             "save": "Sauvegarder",
@@ -34,6 +34,7 @@ var fr = {
         "{NOMBRE}",
         "{SLUG}",
         "{STREAMEUR}",
+        "{TEMPS_VOD}",
         "{TITRE}",
         "{VUES}"
     ]
@@ -56,7 +57,7 @@ var en = {
         },
         "formatDate": {
             "description": "Format of the {DATE} tag: ",
-            "listeFormat": "Formatting list available"
+            "listeFormat": "Formatting list available for the DATE Tag"
         },
         "bouttons": {
             "save": "Save",
@@ -75,6 +76,7 @@ var en = {
         "{NUMBRE}",
         "{SLUG}",
         "{STREAMER}",
+        "{TIME_VOD}",
         "{TITLE}",
         "{VIEWS}"
     ]

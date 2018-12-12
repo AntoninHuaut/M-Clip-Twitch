@@ -1,0 +1,23 @@
+TESTE 
+&
+VALIDE:
+
+    Options:
+O       Boutton changelog => 404
+    
+    Format DL:
+O       {TIME_VOD} => HHMMSS   (5h34m12s => 053412)
+O       Implémenter détection pour les clips ne supportant pas les VOD
+
+    File name DL:
+O       Caractères / * ~ \ ? par _ car sinon pas possible d'enregistrer
+
+    Boutton DL:
+O       Ajouter boutton de DL de clips sur https://www.twitch.tv/USER/clip/SLUG
+
+    Boutton Queue:
+X       Boutton sur les deux pages de DL, pour ajouter le clips en file d'attente
+X       Endroit pour gérer la liste des clips en queue (affichage tous les clips, seulement le nombre de clips en queue ?)
+X       Endroit pour supprimer la liste de queue
+X       Possibilité télécharger toute la queue d'un coup
+X       Système anti doublon dans la queue

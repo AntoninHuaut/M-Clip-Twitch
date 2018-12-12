@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "M Clip Twitch",
   "description": "Download Twitch clips in mp4 and quickly access the vod of a Twitch clip",
-  "version": "1.5.1",
+  "version": "1.6.0",
   "options_ui": {
     "page": "options/options.html",
     "open_in_tab": true
@@ -21,17 +21,15 @@
       "background.js"
     ]
   },
-  "content_scripts": [
-    {
-      "run_at": "document_end",
-      "matches": [
-        "*://clips.twitch.tv/*"
-      ],
-      "js": [
-        "twitch.js"
-      ]
-    }
-  ],
+  "content_scripts": [{
+    "run_at": "document_end",
+    "matches": [
+      "*://*.twitch.tv/*"
+    ],
+    "js": [
+      "twitch.js"
+    ]
+  }],
   "commands": {
     "download-clip": {
       "suggested_key": {

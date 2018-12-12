@@ -33,7 +33,6 @@ function getLang(json, id) {
   return json;
 }
 
-// Saves options to chrome.storage
 function save_options() {
   let pRedirection = document.getElementById('redirection').checked;
   let pLanguage = document.getElementById('language').checked;
@@ -47,7 +46,7 @@ function save_options() {
   let hasChange = false;
 
   chrome.storage.local.get({
-    language: true
+    language: false
   }, function (items) {
     if (items.language != pLanguage) {
       hasChange = true;
@@ -61,7 +60,6 @@ function save_options() {
     formatMP4: pFormatMP4,
     formatDate: pFormatDate
   }, function () {
-    // Update status to let user know options were saved.
     Materialize.toast(langFile.options.notif.save_param, 1500);
 
     if (hasChange)
@@ -71,12 +69,10 @@ function save_options() {
 
 var invalidChars = ['/', '\\'];
 
-// Restores select box and checkbox state using the preferences
-// stored in chrome.storage.
 function restore_options() {
   chrome.storage.local.get({
     redirection: false,
-    language: true,
+    language: false,
     formatMP4: "{STREAMER}.{GAME} {TITLE}",
     formatDate: "DD-MM-YYYY"
   }, function (items) {
@@ -84,6 +80,8 @@ function restore_options() {
     document.getElementById('language').checked = items.language;
     document.getElementById('formatMP4').value = items.formatMP4;
     document.getElementById('formatDate').value = items.formatDate;
+
+    $('#linkUpdateButton').attr("href", "http://clips.maner.fr/update_" + (items.language ? "en" : "fr") + ".html");
   });
 }
 
