@@ -3,21 +3,23 @@ TESTE
 VALIDE:
 
     Options:
-O       Boutton changelog => 404
-    
-    Format DL:
-O       {TIME_VOD} => HHMMSS   (5h34m12s => 053412)
-O       Implémenter détection pour les clips ne supportant pas les VOD
+O       Modifications des caractères interdits
+X       Black theme options comme la queue (ou alors white theme sur page queue)
+X       Remettre police page options (update materialize.css casse tout)
 
-    File name DL:
-O       Caractères / * ~ \ ? par _ car sinon pas possible d'enregistrer
+    www.twitch.tv:
+O       Modification de l'emplacement des boutons
+O       Fix du bug qui empêcher l'interaction des boutons de connexion & de son profil
+O       Fix bug : Changer de page sur twitch supprime les boutons
+O       Fix bug : Allez sur une page d'un autre clip ne fait pas télécharger le premier clip
+O       Le clic sur l'îcone de l'extension détecte le clip
 
-    Boutton DL:
-O       Ajouter boutton de DL de clips sur https://www.twitch.tv/USER/clip/SLUG
+    Lang:
+O       Refonte système de langue, le rendre plus modulable
+O       Integration Korean https://gist.github.com/Dustwo/1dde4eaea752e64faa23f6e2d664d3de
+O       Si langue absente, on prend l'anglais
+O       Ajouter traduit par x
 
-    Boutton Queue:
-X       Boutton sur les deux pages de DL, pour ajouter le clips en file d'attente
-X       Endroit pour gérer la liste des clips en queue (affichage tous les clips, seulement le nombre de clips en queue ?)
-X       Endroit pour supprimer la liste de queue
-X       Possibilité télécharger toute la queue d'un coup
-X       Système anti doublon dans la queue
+    Release:
+X       Refaire les previews sur firefox/chrome store
+X       Refaire descriptions sur firefox/chrome store (mise en avant config nom/système queue)

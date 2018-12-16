@@ -1,91 +1,127 @@
-var langFile;
+var lang;
+var invalidChars = ['/', '\\', '>', '<', ':', '|', '"', '?', '*'];
 
 document.addEventListener("DOMContentLoaded", function (event) {
   setTimeout(function () {
     let list = document.getElementsByClassName("lang");
-    langFile = (!chrome.extension.getBackgroundPage().lang ? fr : en);
+    lang = chrome.extension.getBackgroundPage().lang;
 
     for (let i = 0; i < list.length; i++) {
       let element = list[i];
-
-      if (element.id == "formatFile.browser_issue" /*&& getBrowser() != 1*/) // Opera supporte maintenant la fonctionnalité
-        continue;
-
-      element.innerText = getLang(langFile.options, element.id);
+      element.innerText = getLang(lang, "options." + element.id);
     }
 
+    let tagStrings = getLang(lang, "formatFile");
     let tagList = "";
 
-    for (let i = 0; i < langFile.formatFile.length; i++)
-      tagList += " " + langFile.formatFile[i];
+    for (let i = 0; i < tagStrings.length; i++)
+      tagList += " " + tagStrings[i];
 
-    document.getElementById("formatFile.tagList").innerText = tagList;
+    document.getElementById("format.file.tagList").innerText = tagList;
     restore_options();
+    setLangs();
   }, 10);
 });
 
-function getLang(json, id) {
-  let list = id.split('.');
-
-  for (let i = 0; i < list.length; i++)
-    json = json[list[i]];
-
-  return json;
-}
-
 function save_options() {
   let pRedirection = document.getElementById('redirection').checked;
-  let pLanguage = document.getElementById('language').checked;
   let pFormatMP4 = document.getElementById('formatMP4').value;
-  let pFormatDate = document.getElementById('formatDate').value;
-  if (invalidChars.some(char => pFormatMP4.indexOf(char) > -1)) {
-    Materialize.toast(langFile.options.notif.error_caract, 3000)
+  let pFormatDate = document.getElementById('format.date').value;
+  let pFormatTempsVOD = document.getElementById('format.tempsVOD').value;
+  let pQueueImageSize = document.getElementById('queue.imageSize').value;
+  let pQueueTitleSize = document.getElementById('queue.titleSize').value;
+
+  if (invalidChars.some(char => pFormatMP4.indexOf(char) > -1) ||
+    invalidChars.some(char => pFormatDate.indexOf(char) > -1) ||
+    invalidChars.some(char => pFormatTempsVOD.indexOf(char) > -1)) {
+    M.toast({
+      html: getLang(lang, "options.notif.error_caract"),
+      displayLength: 3000
+    });
     return;
   }
 
-  let hasChange = false;
-
-  chrome.storage.local.get({
-    language: false
-  }, function (items) {
-    if (items.language != pLanguage) {
-      hasChange = true;
-      chrome.extension.getBackgroundPage().lang = pLanguage;
-    }
-  });
+  if (pQueueImageSize == "" || pQueueTitleSize == "" ||
+    isNaN(pQueueImageSize) || isNaN(pQueueTitleSize) ||
+    pQueueImageSize + 0 < 0 || pQueueTitleSize + 0 < 0) {
+    M.toast({
+      html: getLang(lang, "options.notif.error_size"),
+      displayLength: 3000
+    });
+    return;
+  }
 
   chrome.storage.local.set({
     redirection: pRedirection,
-    language: pLanguage,
     formatMP4: pFormatMP4,
-    formatDate: pFormatDate
+    formatDate: pFormatDate,
+    formatTempsVOD: pFormatTempsVOD,
+    queueImageSize: pQueueImageSize,
+    queueTitleSize: pQueueTitleSize
   }, function () {
-    Materialize.toast(langFile.options.notif.save_param, 1500);
-
-    if (hasChange)
-      window.location.reload(false);
+    M.toast({
+      html: getLang(lang, "options.notif.save_param"),
+      displayLength: 1500
+    });
   });
 }
-
-var invalidChars = ['/', '\\'];
 
 function restore_options() {
   chrome.storage.local.get({
     redirection: false,
-    language: false,
     formatMP4: "{STREAMER}.{GAME} {TITLE}",
-    formatDate: "DD-MM-YYYY"
+    formatDate: "DD-MM-YYYY",
+    formatTempsVOD: "-NA-",
+    queueImageSize: "30",
+    queueTitleSize: "20"
   }, function (items) {
     document.getElementById('redirection').checked = items.redirection;
-    document.getElementById('language').checked = items.language;
     document.getElementById('formatMP4').value = items.formatMP4;
-    document.getElementById('formatDate').value = items.formatDate;
+    document.getElementById('format.date').value = items.formatDate;
+    document.getElementById('format.tempsVOD').value = items.formatTempsVOD;
+    document.getElementById('queue.imageSize').value = items.queueImageSize;
+    document.getElementById('queue.titleSize').value = items.queueTitleSize;
 
-    $('#linkUpdateButton').attr("href", "http://clips.maner.fr/update_" + (items.language ? "en" : "fr") + ".html");
+    $('#linkUpdateButton').attr("href", "http://clips.maner.fr/update.html");
   });
 }
 
-document.getElementById('bouttons.save').addEventListener('click', save_options);
+function setLangs() {
+  M.Dropdown.init(document.querySelectorAll('.dropdown-trigger'));
+  $("#select-lang").html(getLang(lang, "options.langue") + ": " + getLang(lang, "name"));
+  let list = "";
+
+  for (let i = 0; i < langsList.length; i++) {
+    list += '<li><a id="selectLang-' + langsList[i] + '" href="#!">' + getLang(langsList[i], "name") + '</a></li>';
+
+    setTimeout(function () {
+      $("#selectLang-" + langsList[i]).click(function () {
+        changeLang(langsList[i]);
+      });
+    }, 10);
+
+    if (i + 1 != langsList.length)
+      list += '<li class="divider" tabindex="-1"></li>';
+  }
+
+  $("#dropdown1").html(list);
+}
+
+function changeLang(newLang) {
+  if (newLang != lang) {
+    chrome.storage.local.set({
+      language: newLang
+    }, function () {
+      chrome.extension.getBackgroundPage().lang = newLang;
+      window.location.reload(false);
+    });
+  }
+}
+
+document.getElementById('boutons.save').addEventListener('click', save_options);
+document.getElementById('boutons.queue').addEventListener('click', function () {
+  window.location.href = "../queue/queue.html";
+});
 
 function getBrowser() {
   return (navigator.userAgent.indexOf(' OPR/') > 0) ? 1 : (typeof InstallTrigger !== 'undefined') ? 3 : (!!window.chrome) ? 2 : 4;

@@ -1,12 +1,20 @@
 moment.locale(navigator.language || navigator.userLanguage);
 
 var delay = null;
-var lang = true; // True EN - False FR
+var lang;
+var queueClips = [];
 
 chrome.storage.local.get({
-	language: false
+	language: "en"
 }, function (items) {
-	lang = items.language;
+	if (typeof (items.language) == "boolean") // CONVERSION ANCIENNE VERSION EXTENSION
+		chrome.storage.local.set({
+			language: "en"
+		}, function () {
+			lang = "en";
+		});
+	else
+		lang = items.language;
 });
 
 chrome.browserAction.onClicked.addListener(function (cTab) {
@@ -15,8 +23,8 @@ chrome.browserAction.onClicked.addListener(function (cTab) {
 		currentWindow: true
 	}, function (tabs) {
 		let tab = tabs[0];
-		let url = tab.url;
-		let clipsUrl = !url.startsWith("https://clips.twitch.tv/");
+		let url = tab.url.replace(/(^\w+:|^)\/\//, '');
+		let clipsUrl = !(url.toLowerCase().startsWith('clips.twitch.tv/') || (url.toLowerCase().startsWith('www.twitch.tv/') && url.toLowerCase().includes('/clip/')));
 
 		if (delay != null)
 			clearTimeout(delay);
@@ -27,18 +35,20 @@ chrome.browserAction.onClicked.addListener(function (cTab) {
 			});
 		}, 1250);
 
-		if (clipsUrl) {
+		let slug = /([A-Z])\w+/.exec(url);
+
+		if (clipsUrl || !slug) {
 			chrome.browserAction.setIcon({
 				path: "images/icon_off.png"
 			});
 			return;
 		}
 
+		slug = slug[0];
+
 		chrome.browserAction.setIcon({
 			path: "images/icon_valid.png"
 		});
-
-		let slug = /([A-Z])\w+/.exec(url)[0];
 
 		chrome.storage.local.get({
 			redirection: false
@@ -53,28 +63,82 @@ chrome.browserAction.onClicked.addListener(function (cTab) {
 	});
 });
 
-chrome.commands.onCommand.addListener(function (command) {
-	if (command === "download-clip") {
-		chrome.tabs.query({
-			active: true,
-			currentWindow: true
-		}, function (tabs) {
-			let url = tabs[0].url;
-
-			if (!url.startsWith("https://clips.twitch.tv/"))
-				return;
-
-			let slug = /([A-Z])\w+/.exec(url)[0];
-			downloadMP4(slug);
-		});
-	}
+chrome.tabs.onActivated.addListener(function (activeInfo) {
+	chrome.tabs.sendMessage(activeInfo.tabId, {
+		greeting: "tab-update"
+	}, function (response) {});
 });
+
+function isInQueue(slug) {
+	let result = false;
+
+	for (let i = 0; i < queueClips.length; i++)
+		if (queueClips[i].slug == slug) {
+			result = true;
+			break;
+		}
+
+	return result;
+}
 
 chrome.runtime.onMessage.addListener(
 	function (request, sender, sendResponse) {
 		if (request.greeting == "startDownloadMP4")
 			downloadMP4(request.slug);
-		else if (request.greeting == "request-lang") {
+		else if (request.greeting == "checkSlugDuplicate") {
+			chrome.tabs.sendMessage(sender.tab.id, {
+				greeting: "check-slug-duplicate",
+				isDuplicate: isInQueue(request.slug)
+			}, function (response) {});
+		} else if (request.greeting == "addSlugQueue") {
+			if (isInQueue(request.slug)) {
+				chrome.tabs.sendMessage(sender.tab.id, {
+					greeting: "check-slug-duplicate",
+					isDuplicate: true
+				}, function (response) {});
+			} else {
+				let resClip;
+
+				$.when($.ajax({
+					type: "GET",
+					url: "https://clips.twitch.tv/api/v2/clips/" + request.slug,
+					cache: false,
+					async: true,
+					success: function (res) {
+						resClip = res;
+					}
+				})).then(function () {
+					queueClips[queueClips.length] = {
+						"slug": request.slug,
+						"url": resClip.preview_image,
+						"title": resClip.title
+					};
+
+					chrome.tabs.sendMessage(sender.tab.id, {
+						greeting: "queue-update",
+						isDuplicate: true
+					}, function (response) {});
+				});
+			}
+		} else if (request.greeting == "removeSlugQueue") {
+			if (!isInQueue(request.slug)) {
+				chrome.tabs.sendMessage(sender.tab.id, {
+					greeting: "check-slug-duplicate",
+					isDuplicate: false
+				}, function (response) {});
+			} else {
+				for (let i = 0; i < queueClips.length; i++)
+					if (queueClips[i].slug == request.slug) {
+						queueClips.splice(queueClips.indexOf(queueClips[i]), 1);
+						break;
+					}
+
+				chrome.tabs.sendMessage(sender.tab.id, {
+					greeting: "queue-update",
+					isDuplicate: false
+				}, function (response) {});
+			}
+		} else if (request.greeting == "request-lang") {
 			chrome.tabs.sendMessage(sender.tab.id, {
 				greeting: "get-lang",
 				lang: lang
@@ -111,9 +175,10 @@ function downloadMP4(slug) {
 	).then(function () {
 		chrome.storage.local.get({
 			formatMP4: "{STREAMER}.{GAME} {TITLE}",
-			formatDate: "DD-MM-YYYY"
+			formatDate: "DD-MM-YYYY",
+			formatTempsVOD: "-NA-"
 		}, function (items) {
-			let time = "-NA-";
+			let time = items.formatTempsVOD;
 
 			if (!!resClip.vod_url) {
 				let tParam = getParameterByName('t', resClip.vod_url);
@@ -130,7 +195,7 @@ function downloadMP4(slug) {
 				resClip.duration, resClip.game, increment, resClip.slug, resClip.broadcaster_display_name, time, resClip.title, resClip.views
 			];
 
-			let fileName = items.formatMP4.rep(replaces).replace(/[\/\*\~\\\?]/g, '_'); // Deleting characters that prevent the file from being saved 
+			let fileName = items.formatMP4.rep(replaces).replace(/[\/\\\*\?\<\>\:\"\|]/g, '_'); // Deleting characters that prevent the file from being saved.
 
 			chrome.downloads.download({
 				url: urlClip,
@@ -143,20 +208,21 @@ function downloadMP4(slug) {
 String.prototype.rep = function (replaces) {
 	let str = this.toString();
 
-	for (let i = 0; i < fr.formatFile.length; i++)
-		str = str.replace(fr.formatFile[i], replaces[i]);
-
-	for (let i = 0; i < en.formatFile.length; i++)
-		str = str.replace(en.formatFile[i], replaces[i]);
+	for (let i = 0; i < getLang(lang, "formatFile").length; i++)
+		str = str.replace(getLang(lang, "formatFile")[i], replaces[i]);
 
 	return str;
 };
 
 chrome.runtime.onInstalled.addListener(details => {
-	if (details.reason == "update" || details.reason == "install")
+	if (compareVersion(chrome.runtime.getManifest().version, details.previousVersion))
+		return;
+
+	if (details.reason == "update") {
 		chrome.tabs.create({
-			url: "http://clips.maner.fr/update_" + (!lang ? "fr" : "en") + ".html"
+			url: "http://clips.maner.fr/update.html"
 		});
+	}
 });
 
 function getParameterByName(name, url) {
@@ -166,4 +232,14 @@ function getParameterByName(name, url) {
 	if (!results) return null;
 	if (!results[2]) return '';
 	return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+
+function compareVersion(previous, actual) {
+	previous = previous.split('.');
+	actual = actual.split('.');
+
+	previous = previous[0] + '.' + previous[1];
+	actual = actual[0] + '.' + actual[1];
+
+	return previous == actual;
 }

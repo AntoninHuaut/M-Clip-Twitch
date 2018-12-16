@@ -1,0 +1,24 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+.clipBlock {
+    display: inline-block;
+}
+
+.space {
+    margin-top: 1.5vh;
+    margin-bottom: 1.5vh;
+}
+
+.w3-bar {
+    margin-top: 2vh;
+    margin-bottom: 0.5vh;
+    padding: 10px 10px 10px 10px;
+    font-size: 24px;
+}
+
+.block {
+    display: block;
+}
