@@ -1,5 +1,5 @@
 var timer = setInterval(editTwitch, 100);
-var lang;
+var lang, slug;
 
 function editTwitch() {
 	let url = window.location.href.replace(/(^\w+:|^)\/\//, '');
@@ -37,7 +37,8 @@ function editTwitch() {
 	else if (hasMTButtons())
 		return;
 
-	slug = /([A-Z])\w+/.exec(location.href)[0];
+	if (type == 1 || type == 2)
+		slug = /([A-Z])\w+/.exec(location.href)[0];
 
 	chrome.runtime.sendMessage({
 		greeting: "request-lang"
@@ -51,24 +52,36 @@ function editTwitch() {
 				for (let i = 0; i < 3; i++)
 					addButton(type, i, lang, get);
 
-				document.querySelector('.downloadClip').addEventListener("click", function () {
-					chrome.runtime.sendMessage({
-						greeting: "startDownloadMP4",
-						slug: slug
+				let tempTriggers = document.querySelectorAll('.downloadClip');
+				tempTriggers.forEach(function (triggerValue) {
+					slug = triggerValue.parentNode.getAttribute('id');
+					triggerValue.addEventListener("click", function () {
+						chrome.runtime.sendMessage({
+							greeting: "startDownloadMP4",
+							slug: slug
+						});
 					});
 				});
 
-				document.querySelector('.addQueueClip').addEventListener("click", function () {
-					chrome.runtime.sendMessage({
-						greeting: "addSlugQueue",
-						slug: slug
+				tempTriggers = document.querySelectorAll('.addQueueClip');
+				tempTriggers.forEach(function (triggerValue) {
+					slug = triggerValue.parentNode.getAttribute('id');
+					triggerValue.addEventListener("click", function () {
+						chrome.runtime.sendMessage({
+							greeting: "addSlugQueue",
+							slug: slug
+						});
 					});
 				});
 
-				document.querySelector('.manageQueueClip').addEventListener("click", function () {
-					setTimeout(function () {
-						window.open(chrome.runtime.getURL("/queue/queue.html"));
-					}, 10); // Prevent freeze queue.html
+				tempTriggers = document.querySelectorAll('.manageQueueClip');
+				tempTriggers.forEach(function (triggerValue) {
+					slug = triggerValue.parentNode.getAttribute('id');
+					triggerValue.addEventListener("click", function () {
+						setTimeout(function () {
+							window.open(chrome.runtime.getURL("/queue/queue.html"));
+						}, 10); // Prevent freeze queue.html
+					});
 				});
 
 				sendCheckSlug();
@@ -106,7 +119,7 @@ function updateButQueue(lang, removeSlugQueue) {
 				});
 			});
 
-			element.src = "https://i.imgur.com/99Z8u53.png";
+			element.src = urlsButtons.removeQueue;
 
 			element = element.parentNode.parentNode.parentNode.parentNode.children[1];
 			element.innerHTML = infos;
@@ -118,7 +131,7 @@ function updateButQueue(lang, removeSlugQueue) {
 		if (!!element) {
 			element.classList.remove('removeQueueClip');
 			element.classList.add('addQueueClip');
-			element.src = "https://i.imgur.com/MElwYPM.png";
+			element.src = urlsButtons.addQueue;
 
 			element = element.parentNode.parentNode.parentNode.parentNode.children[1];
 			element.innerHTML = infos;
@@ -128,7 +141,7 @@ function updateButQueue(lang, removeSlugQueue) {
 
 function addButton(typeSite, typeButton, lang, get) {
 	let infos = "";
-	let button = '<a href="#">' +
+	let button = '<a id="{SLUG}" href="#">' +
 		'<img class="{TRIGGER}" src="{IMG_URL}" />' +
 		'</a></figure>' +
 		'</div>' +
@@ -141,22 +154,32 @@ function addButton(typeSite, typeButton, lang, get) {
 
 	if (typeButton == 0) {
 		infos = getLang(lang, "buttons.downloadClip");
-		button = button.replace('{IMG_URL', 'https://i.imgur.com/TPUbVyZ.png').replace('{INFOS}', infos).replace('{TRIGGER}', 'downloadClip');
-		base = base.replace('{BUTTON}', button);
+		button = button.replace('{IMG_URL', urlsButtons.downloadClip).replace('{TRIGGER}', 'downloadClip');
 	} else if (typeButton == 1) {
 		infos = getLang(lang, "buttons.addQueue");
-		button = button.replace('{IMG_URL', 'https://i.imgur.com/MElwYPM.png').replace('{INFOS}', infos).replace('{TRIGGER}', 'addQueueClip');
-		base = base.replace('{BUTTON}', button);
+		button = button.replace('{IMG_URL', urlsButtons.addQueue).replace('{TRIGGER}', 'addQueueClip');
 	} else if (typeButton == 2) {
 		infos = getLang(lang, "buttons.manageQueue");
-		button = button.replace('{IMG_URL', 'https://i.imgur.com/dLSVDfH.png').replace('{INFOS}', infos).replace('{TRIGGER}', 'manageQueueClip');
-		base = base.replace('{BUTTON}', button);
+		button = button.replace('{IMG_URL', urlsButtons.manageQueue).replace('{TRIGGER}', 'manageQueueClip');
 	}
+
+	if (typeSite == 1 || typeSite == 2)
+		button = button.replace('{SLUG}', slug);
+
+	button = button.replace('{INFOS}', infos);
+	base = base.replace('{BUTTON}', button);
 
 	if (typeButton == 0)
 		get.children[0].insertAdjacentHTML('afterend', '<div class="mTwitchButtons tw-align-items-center tw-flex tw-flex-row tw-flex-shrink-0 tw-full-height tw-pd-1 video-info-bar__action-container"></div>');
 
 	get.querySelector('.mTwitchButtons').innerHTML += base;
+}
+
+var urlsButtons = {
+	"downloadClip": "https://i.imgur.com/t1Le37l.png",
+	"addQueue": "https://i.imgur.com/QUcfpvv.png",
+	"removeQueue": "https://i.imgur.com/0HsqipO.png",
+	"manageQueue": "https://i.imgur.com/aX9nHFZ.png"
 }
 
 function removeMTButtons() {

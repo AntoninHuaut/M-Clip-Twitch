@@ -3,6 +3,11 @@
     margin: 0;
 }
 
+h1 {
+    font-size: 45px;
+    padding: 0 0 1.5vh 0;
+}
+
 .clipBlock {
     display: inline-block;
 }

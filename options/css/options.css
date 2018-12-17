@@ -7,3 +7,11 @@
 .italic {
     font-style: italic;
 }
+
+.desc {
+    font-size: 20px;
+}
+
+.subDesc {
+    font-size: 15px;
+}

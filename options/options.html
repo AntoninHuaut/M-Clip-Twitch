@@ -3,15 +3,15 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>MClip Twitch Options</title>
-    <link type="text/css" rel="stylesheet" href="css/materialize.min.css" media="screen,projection" />
+    <title>MClip Twitch Settings</title>
+    <link type="text/css" rel="stylesheet" href="../css/materialize.min.css" media="screen,projection" />
     <link type="text/css" rel="stylesheet" href="css/options.css" media="screen,projection" />
 </head>
 
-<body class="blue-grey lighten-5">
+<body class="blue-grey lighten-4">
     <div class="row valign-wrapper">
         <div class="col s10 m6 valign center-block">
-            <div class="card grey lighten-4">
+            <div class="card grey lighten-3">
                 <div class="card-content black-text">
                     <span class="card-title">Options</span>
                     <div class="section" style="font-size: 11pt;">
@@ -22,7 +22,7 @@
                         <label class="lang" id="author"></label>
                     </div>
                     <div class="section" style="font-size: 11pt;">
-                        <p id="redirection.description" class="lang"></p>
+                        <p id="redirection.description" class="desc lang"></p>
                         <div class="switch">
                             <label>
                                 <span id="redirection.general" class="lang"></span>
@@ -33,9 +33,9 @@
                         </div>
                     </div>
                     <div class="section" style="font-size: 11pt;">
-                        <p id="format.description" class="lang"></p>
+                        <p id="format.description" class="desc lang"></p>
                         <div class="text subOption">
-                            <p id="format.file.description" class="lang"></p>
+                            <p id="format.file.description" class="subDesc lang"></p>
                             <label>
                                 <span id="format.file.balise" class="lang"></span> <span id="format.file.tagList">
                                 </span>
@@ -45,7 +45,7 @@
                         </div>
 
                         <div class="text subOption">
-                            <p id="format.date.description" class="lang"></p>
+                            <p id="format.date.description" class="subDesc lang"></p>
                             <label>
                                 <input id="format.date" type="text">
                                 <a id="format.date.listeFormat" class="lang" href="https://github.com/abritinthebay/datejs/wiki/Format-Specifiers"></a>
@@ -53,7 +53,7 @@
                         </div>
 
                         <div class="text subOption">
-                            <p id="format.tempsVOD.description" class="lang"></p>
+                            <p id="format.tempsVOD.description" class="subDesc lang"></p>
                             <label>
                                 <span id="format.tempsVOD.infosItalic" class="lang italic"></span>
                                 <input id="format.tempsVOD" type="text">
@@ -61,19 +61,19 @@
                         </div>
                     </div>
                     <div class="section" style="font-size: 11pt;">
-                        <p id="queue.description" class="lang"></p>
+                        <p id="queue.description" class="desc lang"></p>
                         <label>
                             <span id="queue.tips" class="lang italic"></span>
                         </label>
                         <div class="text subOption">
-                            <p id="queue.imageSize.description" class="lang"></p>
+                            <p id="queue.imageSize.description" class="subDesc lang"></p>
                             <label>
                                 <input id="queue.imageSize" type="text">
                             </label>
                         </div>
 
                         <div class="text subOption">
-                            <p id="queue.titleSize.description" class="lang"></p>
+                            <p id="queue.titleSize.description" class="subDesc lang"></p>
                             <label>
                                 <input id="queue.titleSize" type="text">
                             </label>
@@ -81,12 +81,10 @@
                     </div>
                 </div>
                 <div class="card-action">
-                    <button id="boutons.save" class="lang btn waves-effect waves-light" type="submit" name="action"
-                        style="font-size: 11pt;"></button>
-                    <button id="boutons.queue" class="lang btn waves-effect waves-light" type="submit" name="action"
-                        style="font-size: 11pt;"></button>
+                    <button id="boutons.save" class="lang btn waves-effect waves-light" type="submit" name="action"></button>
+                    <button id="boutons.queue" class="lang btn waves-effect waves-light" type="submit" name="action"></button>
                     <a id="linkUpdateButton" href="#"><button id="boutons.change" class="lang btn waves-effect waves-light"
-                            type="submit" name="action" style="font-size: 11pt;"></button></a>
+                            type="submit" name="action"></button></a>
                 </div>
             </div>
         </div>

@@ -1,0 +1,18 @@
+Download Twitch clips in mp4 and quickly access the vod of a Twitch clip
+Extension for Twitch clips, allowing you to download it in MP4 very quickly and to pre-configure the file title
+
+ - Add all clips to a queue, manage the added clips, and download them in one click
+ - One-click upload of your favorite clips with a button that is added to the clip page directly
+ - Customize the clip title format for downloading and other settings by accessing the extension options
+ - Access clip information with one click on the extension icon
+
+
+
+
+
+
+
+
+
+
+ Download Twitch clips in mp4 with a pre-configured title and quickly access the vod of a Twitch clip
