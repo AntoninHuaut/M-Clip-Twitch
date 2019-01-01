@@ -90,6 +90,11 @@ function removeClip(element) {
 
     if (hasTarget)
         loadClips(true);
+
+    chrome.runtime.sendMessage({
+        greeting: "queue-delete-clip",
+        slug: slug
+    });
 }
 
 function loadClips(checkLength) {

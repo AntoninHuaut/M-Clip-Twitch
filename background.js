@@ -63,39 +63,37 @@ chrome.browserAction.onClicked.addListener(function (cTab) {
 	});
 });
 
-chrome.tabs.onActivated.addListener(function (activeInfo) {
-	chrome.tabs.sendMessage(activeInfo.tabId, {
-		greeting: "tab-update"
-	}, function (response) {});
-});
-
 function isInQueue(slug) {
-	let result = false;
-
 	for (let i = 0; i < queueClips.length; i++)
-		if (queueClips[i].slug == slug) {
-			result = true;
-			break;
-		}
+		if (queueClips[i].slug == slug)
+			return true;
 
-	return result;
+	return false;
 }
 
 chrome.runtime.onMessage.addListener(
 	function (request, sender, sendResponse) {
 		if (request.greeting == "startDownloadMP4")
 			downloadMP4(request.slug);
-		else if (request.greeting == "checkSlugDuplicate") {
-			chrome.tabs.sendMessage(sender.tab.id, {
-				greeting: "check-slug-duplicate",
+		else if (request.greeting == "queue-delete-clip") {
+			sendToAllTabs({
+				greeting: "queue-update",
+				slugEl: request.slug,
 				isDuplicate: isInQueue(request.slug)
-			}, function (response) {});
+			});
+		} else if (request.greeting == "checkSlugDuplicate") {
+			sendToAllTabs({
+				greeting: "check-slug-duplicate",
+				slugEl: request.slug,
+				isDuplicate: isInQueue(request.slug)
+			});
 		} else if (request.greeting == "addSlugQueue") {
 			if (isInQueue(request.slug)) {
-				chrome.tabs.sendMessage(sender.tab.id, {
+				sendToAllTabs({
 					greeting: "check-slug-duplicate",
+					slugEl: request.slug,
 					isDuplicate: true
-				}, function (response) {});
+				});
 			} else {
 				let resClip;
 
@@ -114,18 +112,20 @@ chrome.runtime.onMessage.addListener(
 						"title": resClip.title
 					};
 
-					chrome.tabs.sendMessage(sender.tab.id, {
+					sendToAllTabs({
 						greeting: "queue-update",
+						slugEl: request.slug,
 						isDuplicate: true
-					}, function (response) {});
+					});
 				});
 			}
 		} else if (request.greeting == "removeSlugQueue") {
 			if (!isInQueue(request.slug)) {
-				chrome.tabs.sendMessage(sender.tab.id, {
+				sendToAllTabs({
 					greeting: "check-slug-duplicate",
+					slugEl: request.slug,
 					isDuplicate: false
-				}, function (response) {});
+				});
 			} else {
 				for (let i = 0; i < queueClips.length; i++)
 					if (queueClips[i].slug == request.slug) {
@@ -133,18 +133,26 @@ chrome.runtime.onMessage.addListener(
 						break;
 					}
 
-				chrome.tabs.sendMessage(sender.tab.id, {
+				sendToAllTabs({
 					greeting: "queue-update",
+					slugEl: request.slug,
 					isDuplicate: false
-				}, function (response) {});
+				});
 			}
 		} else if (request.greeting == "request-lang") {
-			chrome.tabs.sendMessage(sender.tab.id, {
+			sendToAllTabs({
 				greeting: "get-lang",
 				lang: lang
-			}, function (response) {});
+			});
 		}
 	});
+
+function sendToAllTabs(json) {
+	chrome.tabs.query({}, function (tabs) {
+		for (let i = 0; i < tabs.length; ++i)
+			chrome.tabs.sendMessage(tabs[i].id, json);
+	});
+}
 
 var increment = 1;
 
@@ -183,9 +191,11 @@ function downloadMP4(slug) {
 			if (!!resClip.vod_url) {
 				let tParam = getParameterByName('t', resClip.vod_url);
 
-				if (tParam.includes('h'))
-					time = moment(tParam, "hh[h]mm[m]ss[s]").format("hhmmss");
-				else if (tParam.includes('m'))
+				if (tParam.includes('h')) {
+					time = tParam.split('h')[0];
+					tParam = tParam.split('h')[1];
+					time += moment(tParam, "mm[m]ss[s]").format("mmss");
+				} else if (tParam.includes('m'))
 					time = moment(tParam, "mm[m]ss[s]").format("[00]mmss");
 				else
 					time = moment(tParam, "ss[s]").format("[0000]ss");
@@ -195,7 +205,7 @@ function downloadMP4(slug) {
 				resClip.duration, resClip.game, increment, resClip.slug, resClip.broadcaster_display_name, time, resClip.title, resClip.views
 			];
 
-			let fileName = items.formatMP4.rep(replaces).replace(/[\/\\\*\?\<\>\:\"\|]/g, '_'); // Deleting characters that prevent the file from being saved.
+			let fileName = items.formatMP4.rep(replaces).replace(/[\/\\\*\?\<\>\:\"\|\~]/g, '_'); // Deleting characters that prevent the file from being saved.
 
 			chrome.downloads.download({
 				url: urlClip,
@@ -215,7 +225,7 @@ String.prototype.rep = function (replaces) {
 };
 
 chrome.runtime.onInstalled.addListener(details => {
-	if (compareVersion(chrome.runtime.getManifest().version, details.previousVersion))
+	if (compareVersion(details.previousVersion, chrome.runtime.getManifest().version))
 		return;
 
 	if (details.reason == "update") {
@@ -235,6 +245,9 @@ function getParameterByName(name, url) {
 }
 
 function compareVersion(previous, actual) {
+	if (!previous)
+		return true;
+
 	previous = previous.split('.');
 	actual = actual.split('.');
 
