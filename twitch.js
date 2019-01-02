@@ -1,61 +1,81 @@
+var SiteEnum = {
+	NONE: -1,
+	CLIPS_TW: 1,
+	TW_U_CLIP: 2,
+	TW_U_CLIP_LIST: 3,
+	TW_U_CLIP_LIST_MENU: 4,
+	TW_U_MANAGER_CLIPS: 5
+};
+
 var timer = setInterval(editTwitch, 100);
 var lang, urlLoc, slugAr = [];
 
 function editTwitch() {
 	let url = window.location.href.replace(/(^\w+:|^)\/\//, '');
-	let typeSite = -1;
+	let typeSite = SiteEnum.NONE;
 
-	if (url.toLowerCase().startsWith('clips.twitch.tv/')) // https://clips.twitch.tv/<clip>
-		typeSite = 1;
-	else if (url.toLowerCase().startsWith('www.twitch.tv/')) {
-		if (url.toLowerCase().includes('/clip/')) // https://www.twitch.tv/<user>/clip/<clip>
-			typeSite = 2;
-		else if (url.toLowerCase().includes('/clips')) // https://www.twitch.tv/<user>/clips
-			typeSite = 3;
-		else
-			typeSite = -1;
-	} else
-		return;
-
-	let divButtons;
-
-	if (typeSite == 1)
-		divButtons = document.querySelector('div.tw-align-items-center.tw-flex.tw-justify-content-end.tw-mg-y-1.tw-relative.tw-z-above');
-
-	else if (typeSite == 2) {
-		divButtons = document.querySelector('div.tw-align-items-center.tw-flex.tw-flex-column.tw-flex-nowrap.tw-justify-content-start.tw-md-flex-row');
-
-		if (!hasShareButton(divButtons))
-			return;
-
-	} else if (typeSite == 3)
-		divButtons = document.querySelectorAll('div.preview-card');
-
-	if (divButtons == null || !chrome.runtime)
-		return;
-
-	// RESET 'CHANGE' PAGE
+	// DETECT FAKE CHANGE PAGE TWITCH
 	if (!urlLoc)
 		urlLoc = window.location.href;
 	else if (urlLoc != window.location.href) {
 		lang = null;
 		urlLoc = window.location.href;
 		slugAr = [];
+		removeManageQueue();
 	}
+
+	if (url.toLowerCase().startsWith('clips.twitch.tv/')) // https://clips.twitch.tv/<slug>
+		typeSite = SiteEnum.CLIPS_TW;
+	else if (url.toLowerCase().startsWith('www.twitch.tv/')) {
+		if (url.toLowerCase().includes('/clip/')) // https://www.twitch.tv/<user>/clip/<slug>
+			typeSite = SiteEnum.TW_U_CLIP;
+		else if (url.toLowerCase().includes('/manager/clips')) // https://www.twitch.tv/<user>/manager/clips
+			typeSite = SiteEnum.TW_U_MANAGER_CLIPS;
+		else if (url.toLowerCase().includes('/clips')) // https://www.twitch.tv/<user>/clips
+			typeSite = SiteEnum.TW_U_CLIP_LIST;
+	}
+
+	if (typeSite == SiteEnum.NONE)
+		return;
+
+	let divButtons;
+
+	if (typeSite == SiteEnum.CLIPS_TW)
+		divButtons = document.querySelector('div.tw-align-items-center.tw-flex.tw-justify-content-end.tw-mg-y-1.tw-relative.tw-z-above');
+
+	else if (typeSite == SiteEnum.TW_U_CLIP) {
+		divButtons = document.querySelector('div.tw-align-items-center.tw-flex.tw-flex-column.tw-flex-nowrap.tw-justify-content-start.tw-md-flex-row');
+
+		if (!hasShareButton(divButtons))
+			return;
+
+	} else if (typeSite == SiteEnum.TW_U_CLIP_LIST)
+		divButtons = document.querySelectorAll('div.preview-card');
+	else if (typeSite == SiteEnum.TW_U_MANAGER_CLIPS)
+		divButtons = document.querySelector('div.tw-align-items-center.tw-border-b.tw-c-background-alt.tw-flex.tw-justify-content-between.tw-pd-1');
+
+	if (divButtons == null || !chrome.runtime)
+		return;
 
 	let indexStartSlug = 0;
 
-	if (typeSite == 1)
+	if (typeSite == SiteEnum.CLIPS_TW)
 		clearInterval(timer);
 
-	if (typeSite == 1 || typeSite == 2) {
+	if ([SiteEnum.CLIPS_TW, SiteEnum.TW_U_CLIP, SiteEnum.TW_U_MANAGER_CLIPS].includes(typeSite)) {
 		if (hasMTButtons())
 			return;
 
-		slugAr[0] = getSlugURL(location.href);
-	} else if (typeSite == 3) {
+		if ([SiteEnum.CLIPS_TW, SiteEnum.TW_U_CLIP].includes(typeSite))
+			slugAr[0] = getSlugURL(location.href);
+		else if (typeSite == SiteEnum.TW_U_MANAGER_CLIPS)
+			slugAr[0] = getSlugURL(document.querySelector('div.tw-aspect.tw-aspect--16x9.tw-aspect--align-top').querySelector('iframe').src);
+
+	} else if (typeSite == SiteEnum.TW_U_CLIP_LIST) {
 		if (divButtons.length == 0 || (divButtons.length == slugAr.length && getMTButtons() == slugAr.length))
 			return;
+
+		setupManageQueue();
 
 		indexStartSlug = getMTButtons();
 
@@ -76,7 +96,6 @@ function editTwitch() {
 				} else if (request.greeting == "check-slug-duplicate" || request.greeting == "queue-update")
 					updateButQueue(lang, request.slugEl, request.isDuplicate);
 			});
-
 	} else
 		initButtons(typeSite, lang, divButtons, indexStartSlug);
 }
@@ -85,8 +104,12 @@ function initButtons(typeSite, lang, divButtons, indexStartSlug) {
 	for (let i = indexStartSlug; i < slugAr.length; i++) {
 		let slugEl = slugAr[i];
 
-		for (let i = 0; i < 3; i++)
-			addButton(typeSite, slugEl, i, lang, divButtons);
+		for (let j = 0; j < 3; j++) {
+			if (typeSite == SiteEnum.TW_U_CLIP_LIST && j == 2)
+				continue;
+
+			addButton(typeSite, slugEl, j, lang, divButtons);
+		}
 
 		document.querySelector('.downloadClip.' + slugEl).addEventListener("click", function () {
 			chrome.runtime.sendMessage({
@@ -102,11 +125,10 @@ function initButtons(typeSite, lang, divButtons, indexStartSlug) {
 			});
 		});
 
-		document.querySelector('.manageQueueClip.' + slugEl).addEventListener("click", function () {
-			setTimeout(function () {
-				window.open(chrome.runtime.getURL("/queue/queue.html"));
-			}, 10); // Prevent freeze queue.html
-		});
+		if (typeSite == SiteEnum.TW_U_CLIP_LIST)
+			continue;
+
+		triggerManageQueue('.manageQueueClip.' + slugEl);
 	}
 
 	sendCheckSlug();
@@ -192,13 +214,13 @@ function addButton(typeSite, slugEl, typeButton, lang, get) {
 	let insertIndex, extraMDClass = "",
 		extraMDStyle = "";
 
-	if (typeSite == 1 || typeSite == 2) {
+	if ([SiteEnum.CLIPS_TW, SiteEnum.TW_U_CLIP].includes(typeSite)) {
 		button = button.replace('{IMG_WIDTH}', '');
 		base = base.replace('{EXTRA_SD_STYLE}', 'margin-right: 10px;');
 		extraMDClass = "tw-pd-1";
 
 		insertIndex = 0;
-	} else if (typeSite == 3) {
+	} else if (typeSite == SiteEnum.TW_U_CLIP_LIST) {
 		button = button.replace('{IMG_WIDTH}', 'width="90%"');
 		base = base.replace('{EXTRA_SD_STYLE}', 'margin-right: 5px;');
 		extraMDStyle = "margin-top: 0.5vh;";
@@ -207,6 +229,19 @@ function addButton(typeSite, slugEl, typeButton, lang, get) {
 		get = get[index].querySelector("div.preview-card__titles-wrapper.tw-flex-grow-1.tw-flex-shrink-1.tw-full-width").querySelector("div");
 
 		insertIndex = get.children.length - 1;
+	} else if (typeSite == SiteEnum.TW_U_MANAGER_CLIPS) {
+		button = button.replace('{IMG_WIDTH}', 'width="90%"');
+		base = base.replace('{EXTRA_SD_STYLE}', 'margin-left: 5px;');
+		extraMDStyle = "margin-left: 5px;";
+
+		get = get.querySelector('div.tw-flex');
+		get.childNodes[get.childNodes.length - 1].classList.remove("tw-inline-flex");
+		get.childNodes[get.childNodes.length - 1].classList.remove("tw-tooltip-wrapper");
+
+		insertIndex = get.children.length - 1;
+	} else if (typeSite == SiteEnum.TW_U_CLIP_LIST_MENU) {
+		button = button.replace('{IMG_WIDTH}', '');
+		base = base.replace('{EXTRA_SD_STYLE}', '');
 	}
 
 	base = base.replace('{BUTTON}', button);
@@ -214,7 +249,10 @@ function addButton(typeSite, slugEl, typeButton, lang, get) {
 	if (typeButton == 0)
 		get.children[insertIndex].insertAdjacentHTML('afterend', '<div style="' + extraMDStyle + '" class="mTwitchButtons tw-align-items-center tw-flex tw-flex-row ' + extraMDClass + '"></div>');
 
-	get.querySelector('.mTwitchButtons').innerHTML += base;
+	if (typeSite == SiteEnum.TW_U_CLIP_LIST_MENU)
+		get.innerHTML = '<div class="mTwitchMQueue">' + base + '</div>' + get.innerHTML;
+	else
+		get.querySelector('.mTwitchButtons').innerHTML += base;
 }
 
 var urlsButtons = {
@@ -222,6 +260,30 @@ var urlsButtons = {
 	"addQueue": "https://i.imgur.com/QUcfpvv.png",
 	"removeQueue": "https://i.imgur.com/0HsqipO.png",
 	"manageQueue": "https://i.imgur.com/aX9nHFZ.png"
+}
+
+function removeManageQueue() {
+	let manageQueue = document.querySelector('div.mTwitchMQueue');
+	if (!!manageQueue)
+		manageQueue.parentNode.removeChild(manageQueue);
+}
+
+function setupManageQueue() {
+	if (!lang || document.querySelectorAll(".mTwitchMQueue").length > 0)
+		return;
+
+	removeManageQueue();
+	let navBar = document.querySelector('div.channel-header__right.tw-align-items-center.tw-flex.tw-flex-nowrap.tw-flex-shrink-0');
+	addButton(SiteEnum.TW_U_CLIP_LIST_MENU, "mq", 2, lang, navBar);
+	triggerManageQueue('.mTwitchMQueue');
+}
+
+function triggerManageQueue(className) {
+	document.querySelector(className).addEventListener("click", function () {
+		setTimeout(function () {
+			window.open(chrome.runtime.getURL("/queue/queue.html"));
+		}, 50); // Prevent freeze queue.html
+	});
 }
 
 function getSlugURL(url) {

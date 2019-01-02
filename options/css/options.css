@@ -15,3 +15,8 @@
 .subDesc {
     font-size: 15px;
 }
+
+.coffee {
+    float: right; 
+    vertical-align: middle;
+}
