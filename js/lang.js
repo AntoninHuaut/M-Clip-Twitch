@@ -1,4 +1,4 @@
-var langsList = ["en", "fr", "kr"];
+var langsList = ["en", "kr", "fr"];
 var langs = {
     "fr": {
         "name": "Français",
@@ -6,7 +6,9 @@ var langs = {
             "downloadClip": "Télécharger",
             "addQueue": "Ajouter à la liste d'attente",
             "removeQueue": "Supprimer de la liste d'attente",
-            "manageQueue": "Gérer la liste d'attente"
+            "manageQueue": "Gérer la liste d'attente",
+            "addAllQueue": "Ajouter tous les clips à la liste d'attente",
+            "removeAllQueue": "Supprimer tous les clips de la liste d'attente"
         },
         "options": {
             "redirection": {
@@ -79,7 +81,9 @@ var langs = {
             "downloadClip": "Download",
             "addQueue": "Add to the queue",
             "removeQueue": "Remove from the queue",
-            "manageQueue": "Manage the queue"
+            "manageQueue": "Manage the queue",
+            "addAllQueue": "Add all clips to the queue",
+            "removeAllQueue": "Remove all clips from the queue"
         },
         "options": {
             "redirection": {
@@ -152,7 +156,9 @@ var langs = {
             "downloadClip": "다운로드",
             "addQueue": "대기열에 추가",
             "removeQueue": "대기열에서 삭제",
-            "manageQueue": "대기열 관리"
+            "manageQueue": "대기열 관리",
+            "addAllQueue": "모든 클립을 대기열에 추가",
+            "removeAllQueue": "대기열에서 모든 클립 제거"
         },
         "options": {
             "redirection": {

@@ -21,7 +21,7 @@ function editTwitch() {
 		lang = null;
 		urlLoc = window.location.href;
 		slugAr = [];
-		removeManageQueue();
+		removeButtonsClipsList();
 	}
 
 	if (url.toLowerCase().startsWith('clips.twitch.tv/')) // https://clips.twitch.tv/<slug>
@@ -75,7 +75,7 @@ function editTwitch() {
 		if (divButtons.length == 0 || (divButtons.length == slugAr.length && getMTButtons() == slugAr.length))
 			return;
 
-		setupManageQueue();
+		setupButtonsClipsList();
 
 		indexStartSlug = getMTButtons();
 
@@ -128,7 +128,7 @@ function initButtons(typeSite, lang, divButtons, indexStartSlug) {
 		if (typeSite == SiteEnum.TW_U_CLIP_LIST)
 			continue;
 
-		triggerManageQueue('.manageQueueClip.' + slugEl);
+		triggerButtonsClipsList('.manageQueueClip.' + slugEl);
 	}
 
 	sendCheckSlug();
@@ -152,6 +152,10 @@ function updateButQueue(lang, slugEl, removeSlugQueue) {
 			element.classList.remove('addQueueClip');
 			element.classList.add('removeQueueClip');
 
+			// Reset slug at the last position in the element classList
+			element.classList.remove(slugEl);
+			element.classList.add(slugEl);
+
 			document.querySelector('.removeQueueClip.' + slugEl).addEventListener("click", function () {
 				chrome.runtime.sendMessage({
 					greeting: "removeSlugQueue",
@@ -171,6 +175,11 @@ function updateButQueue(lang, slugEl, removeSlugQueue) {
 		if (!!element) {
 			element.classList.remove('removeQueueClip');
 			element.classList.add('addQueueClip');
+
+			// Reset slug at the last position in the element classList
+			element.classList.remove(slugEl);
+			element.classList.add(slugEl);
+
 			element.src = urlsButtons.addQueue;
 
 			element = element.parentNode.parentNode.parentNode.parentNode.children[1];
@@ -206,6 +215,14 @@ function addButton(typeSite, slugEl, typeButton, lang, get) {
 		infos = getLang(lang, "buttons.manageQueue");
 		trigger = "manageQueueClip";
 		button = button.replace('{IMG_URL', urlsButtons.manageQueue);
+	} else if (typeButton == 3) {
+		infos = getLang(lang, "buttons.addAllQueue");
+		trigger = "addAllQueue";
+		button = button.replace('{IMG_URL', urlsButtons.addQueue);
+	} else if (typeButton == 4) {
+		infos = getLang(lang, "buttons.removeAllQueue");
+		trigger = "removeAllQueue";
+		button = button.replace('{IMG_URL', urlsButtons.removeQueue);
 	}
 
 	button = button.replace('{TRIGGER}', trigger + " " + slugEl);
@@ -241,16 +258,18 @@ function addButton(typeSite, slugEl, typeButton, lang, get) {
 		insertIndex = get.children.length - 1;
 	} else if (typeSite == SiteEnum.TW_U_CLIP_LIST_MENU) {
 		button = button.replace('{IMG_WIDTH}', '');
-		base = base.replace('{EXTRA_SD_STYLE}', '');
+		base = base.replace('{EXTRA_SD_STYLE}', 'margin-left: 10px;');
 	}
 
 	base = base.replace('{BUTTON}', button);
 
+	let htmlMainDiv = '<div style="' + extraMDStyle + '" class="mTwitchButtons tw-align-items-center tw-flex tw-flex-row ' + extraMDClass + '"></div>';
+
 	if (typeButton == 0)
-		get.children[insertIndex].insertAdjacentHTML('afterend', '<div style="' + extraMDStyle + '" class="mTwitchButtons tw-align-items-center tw-flex tw-flex-row ' + extraMDClass + '"></div>');
+		get.children[insertIndex].insertAdjacentHTML('afterend', htmlMainDiv);
 
 	if (typeSite == SiteEnum.TW_U_CLIP_LIST_MENU)
-		get.innerHTML = '<div class="mTwitchMQueue">' + base + '</div>' + get.innerHTML;
+		get.innerHTML += base;
 	else
 		get.querySelector('.mTwitchButtons').innerHTML += base;
 }
@@ -262,28 +281,58 @@ var urlsButtons = {
 	"manageQueue": "https://i.imgur.com/aX9nHFZ.png"
 }
 
-function removeManageQueue() {
-	let manageQueue = document.querySelector('div.mTwitchMQueue');
+function removeButtonsClipsList() {
+	let manageQueue = document.querySelector('div.ButtonsClipsList');
 	if (!!manageQueue)
 		manageQueue.parentNode.removeChild(manageQueue);
 }
 
-function setupManageQueue() {
-	if (!lang || document.querySelectorAll(".mTwitchMQueue").length > 0)
+function setupButtonsClipsList() {
+	if (!lang || document.querySelectorAll(".ButtonsClipsList").length > 0)
 		return;
 
-	removeManageQueue();
+	removeButtonsClipsList();
+
 	let navBar = document.querySelector('div.channel-header__right.tw-align-items-center.tw-flex.tw-flex-nowrap.tw-flex-shrink-0');
-	addButton(SiteEnum.TW_U_CLIP_LIST_MENU, "mq", 2, lang, navBar);
-	triggerManageQueue('.mTwitchMQueue');
+	navBar.innerHTML = '<div class="ButtonsClipsList"></div>' + navBar.innerHTML;
+	navBar = navBar.querySelector('div.ButtonsClipsList');
+	addButton(SiteEnum.TW_U_CLIP_LIST_MENU, "addAllQueue", 3, lang, navBar);
+	addButton(SiteEnum.TW_U_CLIP_LIST_MENU, "removeAllQueue", 4, lang, navBar);
+	addButton(SiteEnum.TW_U_CLIP_LIST_MENU, "manageQueue", 2, lang, navBar);
+	triggerButtonsClipsList('.addAllQueue');
+	triggerButtonsClipsList('.removeAllQueue');
+	triggerButtonsClipsList('.manageQueue');
 }
 
-function triggerManageQueue(className) {
-	document.querySelector(className).addEventListener("click", function () {
-		setTimeout(function () {
-			window.open(chrome.runtime.getURL("/queue/queue.html"));
-		}, 50); // Prevent freeze queue.html
-	});
+function triggerButtonsClipsList(className) {
+	let func;
+
+	if (className == ".addAllQueue" || className == ".removeAllQueue") {
+		func = function () {
+			let trigger = className == ".addAllQueue" ? ".addQueueClip" : ".removeQueueClip";
+			let slugsEl = document.querySelectorAll("img" + trigger);
+
+			for (let i = 0; i < slugsEl.length; i++) {
+				let slug = slugsEl[i].classList[1];
+				let greetingMsg = className == ".addAllQueue" ? "addSlugQueue" : "removeSlugQueue";
+
+				chrome.runtime.sendMessage({
+					greeting: greetingMsg,
+					slug: slug
+				});
+
+				updateButQueue(lang, slug, className == ".removeAllQueue");
+			}
+		};
+	} else if (className == ".manageQueue") {
+		func = function () {
+			setTimeout(function () {
+				window.open(chrome.runtime.getURL("/queue/queue.html"));
+			}, 50); // Prevent freeze queue.html
+		};
+	}
+
+	document.querySelector(className).addEventListener("click", func);
 }
 
 function getSlugURL(url) {
