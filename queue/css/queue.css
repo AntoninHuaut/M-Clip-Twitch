@@ -5,7 +5,26 @@
 
 h1 {
     font-size: 45px;
-    padding: 0 0 1.5vh 0;
+    padding: 0.5vh 0 1.5vh 0;
+}
+
+h3 {
+    margin-top: 1.5vh;
+}
+
+#menu {
+    margin-top: 2.5vh;
+}
+
+#menuOption {
+    margin-top: 0.5vh;
+    margin-bottom: 0.125vh;
+    padding: 10px 10px 10px 10px;
+    font-size: 24px;
+}
+
+#clipsList {
+    margin-top: 2.5vh;
 }
 
 .clipBlock {
@@ -15,13 +34,6 @@ h1 {
 .space {
     margin-top: 1.5vh;
     margin-bottom: 1.5vh;
-}
-
-.w3-bar {
-    margin-top: 2vh;
-    margin-bottom: 0.5vh;
-    padding: 10px 10px 10px 10px;
-    font-size: 24px;
 }
 
 .block {

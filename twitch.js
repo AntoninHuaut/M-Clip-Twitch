@@ -7,6 +7,21 @@ var SiteEnum = {
 	TW_U_MANAGER_CLIPS: 5
 };
 
+var BouttonsEnum = {
+	DOWNLOAD_CLIP: 0,
+	ADD_QUEUE: 1,
+	MANAGE_QUEUE: 2,
+	ADD_ALL_QUEUE: 3,
+	REMOVE_ALL_QUEUE: 4
+};
+
+var urlsButtons = {
+	"downloadClip": "https://i.imgur.com/t1Le37l.png",
+	"addQueue": "https://i.imgur.com/QUcfpvv.png",
+	"removeQueue": "https://i.imgur.com/0HsqipO.png",
+	"manageQueue": "https://i.imgur.com/aX9nHFZ.png"
+};
+
 var timer = setInterval(editTwitch, 100);
 var lang, urlLoc, slugAr = [];
 
@@ -76,7 +91,6 @@ function editTwitch() {
 			return;
 
 		setupButtonsClipsList();
-
 		indexStartSlug = getMTButtons();
 
 		for (let i = indexStartSlug; i < divButtons.length; i++)
@@ -144,17 +158,15 @@ function sendCheckSlug() {
 }
 
 function updateButQueue(lang, slugEl, removeSlugQueue) {
+	let infos, element;
+
 	if (removeSlugQueue) {
-		let infos = getLang(lang, "buttons.removeQueue");
-		let element = document.querySelector(".addQueueClip." + slugEl);
+		infos = getLang(lang, "buttons.removeQueue");
+		element = document.querySelector(".addQueueClip." + slugEl);
 
 		if (!!element) {
 			element.classList.remove('addQueueClip');
 			element.classList.add('removeQueueClip');
-
-			// Reset slug at the last position in the element classList
-			element.classList.remove(slugEl);
-			element.classList.add(slugEl);
 
 			document.querySelector('.removeQueueClip.' + slugEl).addEventListener("click", function () {
 				chrome.runtime.sendMessage({
@@ -164,28 +176,31 @@ function updateButQueue(lang, slugEl, removeSlugQueue) {
 			});
 
 			element.src = urlsButtons.removeQueue;
-
-			element = element.parentNode.parentNode.parentNode.parentNode.children[1];
-			element.innerHTML = infos;
 		}
 	} else {
-		let infos = getLang(lang, "buttons.addQueue");
-		let element = document.querySelector(".removeQueueClip." + slugEl);
+		infos = getLang(lang, "buttons.addQueue");
+		element = document.querySelector(".removeQueueClip." + slugEl);
 
 		if (!!element) {
 			element.classList.remove('removeQueueClip');
 			element.classList.add('addQueueClip');
 
-			// Reset slug at the last position in the element classList
-			element.classList.remove(slugEl);
-			element.classList.add(slugEl);
-
 			element.src = urlsButtons.addQueue;
-
-			element = element.parentNode.parentNode.parentNode.parentNode.children[1];
-			element.innerHTML = infos;
 		}
 	}
+
+	if (!element)
+		return;
+
+	resetSlugClass(element, slugEl);
+	element = element.parentNode.parentNode.parentNode.parentNode.children[1];
+	element.innerHTML = infos;
+}
+
+// Reset slug at the last position in the element classList
+function resetSlugClass(element, slugEl) {
+	element.classList.remove(slugEl);
+	element.classList.add(slugEl);
 }
 
 function addButton(typeSite, slugEl, typeButton, lang, get) {
@@ -203,23 +218,23 @@ function addButton(typeSite, slugEl, typeButton, lang, get) {
 		'<figure class="tw-svg">{BUTTON}' +
 		'</div></div></div>';
 
-	if (typeButton == 0) {
+	if (typeButton == BouttonsEnum.DOWNLOAD_CLIP) {
 		infos = getLang(lang, "buttons.downloadClip");
 		trigger = "downloadClip";
 		button = button.replace('{IMG_URL', urlsButtons.downloadClip);
-	} else if (typeButton == 1) {
+	} else if (typeButton == BouttonsEnum.ADD_QUEUE) {
 		infos = getLang(lang, "buttons.addQueue");
 		trigger = "addQueueClip";
 		button = button.replace('{IMG_URL', urlsButtons.addQueue);
-	} else if (typeButton == 2) {
+	} else if (typeButton == BouttonsEnum.MANAGE_QUEUE) {
 		infos = getLang(lang, "buttons.manageQueue");
 		trigger = "manageQueueClip";
 		button = button.replace('{IMG_URL', urlsButtons.manageQueue);
-	} else if (typeButton == 3) {
+	} else if (typeButton == BouttonsEnum.ADD_ALL_QUEUE) {
 		infos = getLang(lang, "buttons.addAllQueue");
 		trigger = "addAllQueue";
 		button = button.replace('{IMG_URL', urlsButtons.addQueue);
-	} else if (typeButton == 4) {
+	} else if (typeButton == BouttonsEnum.REMOVE_ALL_QUEUE) {
 		infos = getLang(lang, "buttons.removeAllQueue");
 		trigger = "removeAllQueue";
 		button = button.replace('{IMG_URL', urlsButtons.removeQueue);
@@ -265,20 +280,13 @@ function addButton(typeSite, slugEl, typeButton, lang, get) {
 
 	let htmlMainDiv = '<div style="' + extraMDStyle + '" class="mTwitchButtons tw-align-items-center tw-flex tw-flex-row ' + extraMDClass + '"></div>';
 
-	if (typeButton == 0)
+	if (typeButton == BouttonsEnum.DOWNLOAD_CLIP)
 		get.children[insertIndex].insertAdjacentHTML('afterend', htmlMainDiv);
 
 	if (typeSite == SiteEnum.TW_U_CLIP_LIST_MENU)
 		get.innerHTML += base;
 	else
 		get.querySelector('.mTwitchButtons').innerHTML += base;
-}
-
-var urlsButtons = {
-	"downloadClip": "https://i.imgur.com/t1Le37l.png",
-	"addQueue": "https://i.imgur.com/QUcfpvv.png",
-	"removeQueue": "https://i.imgur.com/0HsqipO.png",
-	"manageQueue": "https://i.imgur.com/aX9nHFZ.png"
 }
 
 function removeButtonsClipsList() {

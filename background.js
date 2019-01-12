@@ -75,13 +75,18 @@ chrome.runtime.onMessage.addListener(
 	function (request, sender, sendResponse) {
 		if (request.greeting == "startDownloadMP4")
 			downloadMP4(request.slug);
+
+		// queue.js
 		else if (request.greeting == "queue-delete-clip") {
 			sendToAllTabs({
 				greeting: "queue-update",
 				slugEl: request.slug,
 				isDuplicate: isInQueue(request.slug)
 			});
-		} else if (request.greeting == "checkSlugDuplicate") {
+		}
+		
+		// twitch.js
+		else if (request.greeting == "checkSlugDuplicate") {
 			sendToAllTabs({
 				greeting: "check-slug-duplicate",
 				slugEl: request.slug,

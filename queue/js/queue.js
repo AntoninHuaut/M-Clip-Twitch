@@ -26,10 +26,11 @@ document.addEventListener("DOMContentLoaded", function () {
         loadClips(false);
     }, 10);
 
-    setInterval(function () {
-        if ($(".space").length != queueClips.length)
-            loadClips(false);
-    }, 1000);
+    chrome.runtime.onMessage.addListener(
+        function (request, sender, sendResponse) {
+            if (request.greeting == "queue-update")
+                loadClips(false);
+        });
 });
 
 function actionButton(type) {
@@ -98,7 +99,7 @@ function removeClip(element) {
 }
 
 function loadClips(checkLength) {
-    let element = document.querySelector('body div');
+    let element = document.querySelector('body div#clipsList');
 
     if (queueClips.length == 0)
         element.innerHTML = "<h1>" + getLang(lang, "queue.no_clip") + "</h1>";
