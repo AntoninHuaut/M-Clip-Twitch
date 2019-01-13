@@ -11,17 +11,12 @@ document.addEventListener("DOMContentLoaded", function () {
             element.innerText = getLang(lang, "queue." + element.id);
         }
 
-        $("#remove_all").click(function () {
-            actionButton(1);
-        });
+        let menuList = ["remove_all", "back", "download_all"];
 
-        $("#back").click(function () {
-            actionButton(2);
-        });
-
-        $("#download_all").click(function () {
-            actionButton(3);
-        });
+        for (let i = 0; i < menuList.length; i++)
+            document.querySelector("#" + menuList[i]).addEventListener("click", () => {
+                actionButton(i + 1);
+            });
 
         loadClips(false);
     }, 10);
@@ -53,8 +48,8 @@ function doActionAllClip(i, total, type) {
     if (total == 0)
         return;
 
-    if (type == -1) {
-        removeClip($("#" + queueClips[0].slug));
+    if (type == -1 && queueClips.length > 0) {
+        removeClip(document.getElementById("DIV_" + queueClips[0].slug), true);
 
         if (i + 1 == total)
             loadClips(true);
@@ -67,56 +62,55 @@ function doActionAllClip(i, total, type) {
         }, 1);
 }
 
-function removeClip(element) {
-    let hasTarget = !!element.target;
+function removeClip(element, removeAll) {
+    if (removeAll) {
+        let size = queueClips.length;
 
-    if (hasTarget) {
-        element = element.target;
+        for (let i = 0; i < size; i++) {
+            chrome.runtime.sendMessage({
+                greeting: "queue-delete-clip",
+                slug: queueClips[0].slug
+            });
 
-        if (element.localName == "i")
-            element = element.parentNode;
-    } else
-        element = element[0];
-
-    let slug = element.id;
-
-    for (let i = 0; i < queueClips.length; i++)
-        if (queueClips[i].slug == slug) {
-            queueClips.splice(queueClips.indexOf(queueClips[i]), 1);
-            element = document.querySelector("#DIV_" + slug);
+            element = document.getElementById('DIV_' + queueClips[0].slug);
+            queueClips.splice(queueClips.indexOf(queueClips[0]), 1);
             element.parentNode.removeChild(element);
+        }
+    } else {
+        let slug = element.id.replace('DIV_', '');
 
-            break;
+        for (let i = 0; i < queueClips.length; i++) {
+            if (queueClips[i].slug == slug) {
+                queueClips.splice(queueClips.indexOf(queueClips[i]), 1);
+                element.parentNode.removeChild(element);
+                break;
+            }
         }
 
-    if (hasTarget)
-        loadClips(true);
-
-    chrome.runtime.sendMessage({
-        greeting: "queue-delete-clip",
-        slug: slug
-    });
+        chrome.runtime.sendMessage({
+            greeting: "queue-delete-clip",
+            slug: slug
+        });
+    }
 }
 
 function loadClips(checkLength) {
-    let element = document.querySelector('body div#clipsList');
+    let element = document.getElementById('clipsList');
 
     if (queueClips.length == 0)
         element.innerHTML = "<h1>" + getLang(lang, "queue.no_clip") + "</h1>";
     else if (!checkLength) {
-        let gets = $("div .clipBlock .w3-container .w3-center");
         element.innerHTML = "";
-
-        for (let i = 0; i < gets.length; i++)
-            gets[i].parentNode.removeChild(gets[i]);
 
         for (let i = 0; i < queueClips.length; i++) {
             let clip = queueClips[i];
             element.innerHTML += template.replace('{TITLE_C}', clip.title).replace(new RegExp('{SLUG_C}', 'g'), clip.slug).replace('{URL_C}', clip.url);
 
             setTimeout(function () {
-                $("#" + clip.slug).click(removeClip);
-            }, 10);
+                document.querySelector("#" + clip.slug).addEventListener("click", () => {
+                    removeClip(document.getElementById("DIV_" + clip.slug), false);
+                });
+            }, 1);
         }
     }
 
@@ -128,8 +122,8 @@ function loadCSS() {
         queueImageSize: "30",
         queueTitleSize: "20"
     }, function (items) {
-        $("img").css("width", items.queueImageSize + "vw");
-        $("h3").css("font-size", items.queueTitleSize + "px");
+        document.querySelectorAll("img").forEach(get => get.style.width = items.queueImageSize + "vw");
+        document.querySelectorAll("h3").forEach(get => get.style.fontSize = items.queueTitleSize + "px");
     });
 }
 

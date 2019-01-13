@@ -2,7 +2,7 @@
 M Clip Twitch is an chrome/firefox extension to make it easier to download Twitch clips  
 
 ## Getting Started
-Extension for Twitch clips, allowing you to download it in MP4 very quickly and to pre-configure the file title
+Extension for Twitch clips, allowing you to download it in MP4 very quickly and to pre-configure the file title  
 
  - Add all clips to a queue, manage the added clips, and download them in one click
  - One-click upload of your favorite clips with a button that is added to the clip page directly

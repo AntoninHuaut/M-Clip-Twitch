@@ -82,29 +82,29 @@ function restore_options() {
     document.getElementById('queue.imageSize').value = items.queueImageSize;
     document.getElementById('queue.titleSize').value = items.queueTitleSize;
 
-    $('#linkUpdateButton').attr("href", "http://clips.maner.fr/update.html");
+    document.getElementById('linkUpdateButton').href = "http://clips.maner.fr/update.html";
   });
 }
 
 function setLangs() {
   M.Dropdown.init(document.querySelectorAll('.dropdown-trigger'));
-  $("#select-lang").html(getLang(lang, "options.langue") + ": " + getLang(lang, "name"));
+  document.getElementById("select-lang").innerHTML = getLang(lang, "options.langue") + ": " + getLang(lang, "name");
   let list = "";
 
   for (let i = 0; i < langsList.length; i++) {
     list += '<li><a id="selectLang-' + langsList[i] + '" href="#!">' + getLang(langsList[i], "name") + '</a></li>';
 
     setTimeout(function () {
-      $("#selectLang-" + langsList[i]).click(function () {
+      document.getElementById("selectLang-" + langsList[i]).addEventListener("click", () => {
         changeLang(langsList[i]);
       });
-    }, 10);
+    }, 1);
 
     if (i + 1 != langsList.length)
       list += '<li class="divider" tabindex="-1"></li>';
   }
 
-  $("#dropdown1").html(list);
+  document.getElementById("dropdown1").innerHTML = list;
 }
 
 function changeLang(newLang) {

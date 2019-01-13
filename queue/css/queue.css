@@ -3,6 +3,10 @@
     margin: 0;
 }
 
+body {
+    background-color: #cfd8dc;
+}
+
 h1 {
     font-size: 45px;
     padding: 0.5vh 0 1.5vh 0;
@@ -14,6 +18,7 @@ h3 {
 
 #menu {
     margin-top: 2.5vh;
+    background-color: #eceff1;
 }
 
 #menuOption {
@@ -25,6 +30,7 @@ h3 {
 
 #clipsList {
     margin-top: 2.5vh;
+    background-color: #eceff1;
 }
 
 .clipBlock {
