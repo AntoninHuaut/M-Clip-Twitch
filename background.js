@@ -84,7 +84,7 @@ chrome.runtime.onMessage.addListener(
 				isDuplicate: isInQueue(request.slug)
 			});
 		}
-		
+
 		// twitch.js
 		else if (request.greeting == "checkSlugDuplicate") {
 			sendToAllTabs({
@@ -100,29 +100,23 @@ chrome.runtime.onMessage.addListener(
 					isDuplicate: true
 				});
 			} else {
-				let resClip;
+				fetch("https://clips.twitch.tv/api/v2/clips/" + request.slug)
+					.then(function (res) {
+						return res.json();
+					})
+					.then(function (js) {
+						queueClips[queueClips.length] = {
+							"slug": request.slug,
+							"url": js.preview_image,
+							"title": js.title
+						};
 
-				$.when($.ajax({
-					type: "GET",
-					url: "https://clips.twitch.tv/api/v2/clips/" + request.slug,
-					cache: false,
-					async: true,
-					success: function (res) {
-						resClip = res;
-					}
-				})).then(function () {
-					queueClips[queueClips.length] = {
-						"slug": request.slug,
-						"url": resClip.preview_image,
-						"title": resClip.title
-					};
-
-					sendToAllTabs({
-						greeting: "queue-update",
-						slugEl: request.slug,
-						isDuplicate: true
+						sendToAllTabs({
+							greeting: "queue-update",
+							slugEl: request.slug,
+							isDuplicate: true
+						});
 					});
-				});
 			}
 		} else if (request.greeting == "removeSlugQueue") {
 			if (!isInQueue(request.slug)) {
@@ -162,62 +156,49 @@ function sendToAllTabs(json) {
 var increment = 1;
 
 function downloadMP4(slug) {
-	let urlClip;
-	let resClip;
-	increment++;
+	let index = [slug + "/status", slug]
+	let proms = index.map(data => fetch("https://clips.twitch.tv/api/v2/clips/" + data));
 
-	$.when(
-		$.ajax({
-			type: "GET",
-			url: "https://clips.twitch.tv/api/v2/clips/" + slug + "/status",
-			cache: false,
-			async: true,
-			success: function (res) {
-				urlClip = res.quality_options[0].source;
-			}
-		}),
-		$.ajax({
-			type: "GET",
-			url: "https://clips.twitch.tv/api/v2/clips/" + slug,
-			cache: false,
-			async: true,
-			success: function (res) {
-				resClip = res;
-			}
-		})
-	).then(function () {
-		chrome.storage.local.get({
-			formatMP4: "{STREAMER}.{GAME} {TITLE}",
-			formatDate: "DD-MM-YYYY",
-			formatTempsVOD: "-NA-"
-		}, function (items) {
-			let time = items.formatTempsVOD;
+	Promise.all(proms)
+		.then(ps => Promise.all(ps.map(p => p.json())))
+		.then(js => {
+			let urlClip = js[0].quality_options[0].source;
+			let resClip = js[1];
 
-			if (!!resClip.vod_url) {
-				let tParam = getParameterByName('t', resClip.vod_url);
+			chrome.storage.local.get({
+				formatMP4: "{STREAMER}.{GAME} {TITLE}",
+				formatDate: "DD-MM-YYYY",
+				formatTempsVOD: "-NA-"
+			}, function (items) {
+				let time = items.formatTempsVOD;
 
-				if (tParam.includes('h')) {
-					time = tParam.split('h')[0];
-					tParam = tParam.split('h')[1];
-					time += moment(tParam, "mm[m]ss[s]").format("mmss");
-				} else if (tParam.includes('m'))
-					time = moment(tParam, "mm[m]ss[s]").format("[00]mmss");
-				else
-					time = moment(tParam, "ss[s]").format("[0000]ss");
-			}
+				if (!!resClip.vod_url) {
+					let tParam = getParameterByName('t', resClip.vod_url);
 
-			let replaces = [resClip.curator_display_name, moment(new Date(resClip.created_at)).format(items.formatDate),
-				resClip.duration, resClip.game, increment, resClip.slug, resClip.broadcaster_display_name, time, resClip.title, resClip.views
-			];
+					if (tParam.includes('h')) {
+						time = tParam.split('h')[0];
+						tParam = tParam.split('h')[1];
+						time += moment(tParam, "mm[m]ss[s]").format("mmss");
+					} else if (tParam.includes('m'))
+						time = moment(tParam, "mm[m]ss[s]").format("[00]mmss");
+					else
+						time = moment(tParam, "ss[s]").format("[0000]ss");
+				}
 
-			let fileName = items.formatMP4.rep(replaces).replace(/[\/\\\*\?\<\>\:\"\|\~]/g, '_'); // Deleting characters that prevent the file from being saved.
+				let replaces = [resClip.curator_display_name, moment(new Date(resClip.created_at)).format(items.formatDate),
+					resClip.duration, resClip.game, increment, resClip.slug, resClip.broadcaster_display_name, time, resClip.title, resClip.views
+				];
 
-			chrome.downloads.download({
-				url: urlClip,
-				filename: fileName + ".mp4"
+				let fileName = items.formatMP4.rep(replaces).replace(/[\/\\\*\?\<\>\:\"\|\~]/g, '_'); // Deleting characters that prevent the file from being saved.
+
+				chrome.downloads.download({
+					url: urlClip,
+					filename: fileName + ".mp4"
+				});
+
+				increment++;
 			});
 		});
-	});
 }
 
 String.prototype.rep = function (replaces) {
