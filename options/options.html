@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <title>MClip Twitch Settings</title>
     <link type="text/css" rel="stylesheet" href="../css/materialize.min.css" media="screen,projection" />
+    <link type="text/css" rel="stylesheet" href="css/nouislider.min.css" media="screen,projection" />
     <link type="text/css" rel="stylesheet" href="css/options.css" media="screen,projection" />
 </head>
 
@@ -34,13 +35,13 @@
                     </div>
                     <div class="section" style="font-size: 11pt;">
                         <p id="format.description" class="desc lang"></p>
-                        <div class="text subOption">
+                        <div class="text firstSubOption subOption">
                             <p id="format.file.description" class="subDesc lang"></p>
                             <label>
-                                <span id="format.file.balise" class="lang"></span> <span id="format.file.tagList">
-                                </span>
-                                <input id="formatMP4" type="text"> <span id="format.file.nbInfos" class="lang"> </span>
-                                <span id="format.file.nbInfosItalic" class="lang italic"></span>
+                                <input id="formatMP4" type="text">
+                                <span id="format.file.balise" class="lang"></span> <span id="format.file.tagList"></span>
+                                <br /><span id="format.file.nbInfos" class="lang"></span> <span id="format.file.nbInfosItalic"
+                                    class="lang italic"></span>
                             </label>
                         </div>
 
@@ -55,8 +56,8 @@
                         <div class="text subOption">
                             <p id="format.tempsVOD.description" class="subDesc lang"></p>
                             <label>
-                                <span id="format.tempsVOD.infosItalic" class="lang italic"></span>
                                 <input id="format.tempsVOD" type="text">
+                                <span id="format.tempsVOD.infosItalic" class="lang italic"></span>
                             </label>
                         </div>
                     </div>
@@ -65,18 +66,14 @@
                         <label>
                             <span id="queue.tips" class="lang italic"></span>
                         </label>
-                        <div class="text subOption">
-                            <p id="queue.imageSize.description" class="subDesc lang"></p>
-                            <label>
-                                <input id="queue.imageSize" type="text">
-                            </label>
-                        </div>
+                        <div class="text firstSubOption subOption">
+                            <p id="queue.previewScale.description" class="subDesc lang"></p>
 
-                        <div class="text subOption">
-                            <p id="queue.titleSize.description" class="subDesc lang"></p>
-                            <label>
-                                <input id="queue.titleSize" type="text">
-                            </label>
+                            <div style="text-align: center;">
+                                <span id='slider-value' class='subDesc'>50%</span>
+                            </div>
+
+                            <div id='slider-noUiSlider'></div>
                         </div>
                     </div>
                 </div>
@@ -96,6 +93,7 @@
 
 <script type="text/javascript" src="js/materialize.min.js"></script>
 <script src="../js/lang.js"></script>
+<script type="text/javascript" src="js/nouislider.min.js"></script>
 <script src="js/options.js"></script>
 
 </html>

@@ -18,6 +18,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
       tagList += " " + tagStrings[i];
 
     document.getElementById("format.file.tagList").innerText = tagList;
+
+    initPreviewScale();
     restore_options();
     setLangs();
   }, 10);
@@ -28,8 +30,7 @@ function save_options() {
   let pFormatMP4 = document.getElementById('formatMP4').value;
   let pFormatDate = document.getElementById('format.date').value;
   let pFormatTempsVOD = document.getElementById('format.tempsVOD').value;
-  let pQueueImageSize = document.getElementById('queue.imageSize').value;
-  let pQueueTitleSize = document.getElementById('queue.titleSize').value;
+  let pPreviewScale = prevScaleSlider.noUiSlider.get() / 100;
 
   if (invalidChars.some(char => pFormatMP4.indexOf(char) > -1) ||
     invalidChars.some(char => pFormatDate.indexOf(char) > -1) ||
@@ -41,23 +42,12 @@ function save_options() {
     return;
   }
 
-  if (pQueueImageSize == "" || pQueueTitleSize == "" ||
-    isNaN(pQueueImageSize) || isNaN(pQueueTitleSize) ||
-    pQueueImageSize + 0 < 0 || pQueueTitleSize + 0 < 0) {
-    M.toast({
-      html: getLang(lang, "options.notif.error_size"),
-      displayLength: 3000
-    });
-    return;
-  }
-
   chrome.storage.local.set({
     redirection: pRedirection,
     formatMP4: pFormatMP4,
     formatDate: pFormatDate,
     formatTempsVOD: pFormatTempsVOD,
-    queueImageSize: pQueueImageSize,
-    queueTitleSize: pQueueTitleSize
+    previewScale: pPreviewScale
   }, function () {
     M.toast({
       html: getLang(lang, "options.notif.save_param"),
@@ -72,18 +62,16 @@ function restore_options() {
     formatMP4: "{STREAMER}.{GAME} {TITLE}",
     formatDate: "DD-MM-YYYY",
     formatTempsVOD: "-NA-",
-    queueImageSize: "30",
-    queueTitleSize: "20"
+    previewScale : 1.0
   }, function (items) {
     document.getElementById('redirection').checked = items.redirection;
     document.getElementById('formatMP4').value = items.formatMP4;
     document.getElementById('format.date').value = items.formatDate;
     document.getElementById('format.tempsVOD').value = items.formatTempsVOD;
-    document.getElementById('queue.imageSize').value = items.queueImageSize;
-    document.getElementById('queue.titleSize').value = items.queueTitleSize;
-
-    document.getElementById('linkUpdateButton').href = "http://clips.maner.fr/update.html";
+    prevScaleSlider.noUiSlider.set(items.previewScale * 100);
   });
+
+  document.getElementById('linkUpdateButton').href = "http://clips.maner.fr/update.html";
 }
 
 function setLangs() {
@@ -116,6 +104,25 @@ function changeLang(newLang) {
       window.location.reload(false);
     });
   }
+}
+
+var prevScaleSlider = document.getElementById('slider-noUiSlider');
+
+function initPreviewScale() {
+  noUiSlider.create(prevScaleSlider, {
+    start: [100],
+    step: 1,
+    behaviour: 'tap-drag',
+    connect: [true, false],
+    range: {
+      'min': [0],
+      'max': [200]
+    }
+  });
+
+  prevScaleSlider.noUiSlider.on('update', function () {
+    document.getElementById('slider-value').innerHTML = parseInt(prevScaleSlider.noUiSlider.get()) + " %";
+  });
 }
 
 document.getElementById('boutons.save').addEventListener('click', save_options);

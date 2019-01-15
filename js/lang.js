@@ -21,7 +21,7 @@ var langs = {
             "format": {
                 "description": "Choix des formats",
                 "file": {
-                    "description": "Format (Nom du fichier) du fichier MP4: ",
+                    "description": "Format (Nom du fichier) du Clip: ",
                     "balise": "Balises disponibles:",
                     "nbInfos": "{NOMBRE}",
                     "nbInfosItalic": "Augmente de 1 à chaque téléchargement de clip, réinitialise lorsque le navigateur est relancé"
@@ -46,13 +46,10 @@ var langs = {
                 "save_param": "Paramètres sauvegardés !"
             },
             "queue": {
-                "description": "Configuration de la file d'attente",
+                "description": "Configuration de la page de file d'attente",
                 "tips": "Astuce: désactivez dans les paramètres de votre navigateur la popup de téléchargement de fichiers",
-                "imageSize": {
-                    "description": "Taille de la prévisualisation (largeur vw)"
-                },
-                "titleSize": {
-                    "description": "Taille du titre (px)"
+                "previewScale": {
+                    "description": "Taille des vignettes des clips de la file d'attente"
                 }
             }
         },
@@ -96,7 +93,7 @@ var langs = {
             "format": {
                 "description": "Choice of formats",
                 "file": {
-                    "description": "Format (File name) of the MP4 file: ",
+                    "description": "Format (File name) of the Clip: ",
                     "balise": "Available tags:",
                     "nbInfos": "{NUMBER}",
                     "nbInfosItalic": "Increases by 1 each time a clip is downloaded, resets when the browser is restarted"
@@ -121,13 +118,10 @@ var langs = {
                 "save_param": "Saved settings!"
             },
             "queue": {
-                "description": "Configuring the queue",
+                "description": "Configuring the queue page",
                 "tips": "Tip: disable the file download popup in your browser settings",
-                "imageSize": {
-                    "description": "Clip preview size (width vw)"
-                },
-                "titleSize": {
-                    "description": "Clip title size (px)"
+                "previewScale": {
+                    "description": "Size of the thumbnails of the clips in the queue"
                 }
             }
         },
@@ -171,7 +165,7 @@ var langs = {
             "format": {
                 "description": "여러 규칙을 선택하세요.",
                 "file": {
-                    "description": "MP4 파일명 규칙 (파일이름): ",
+                    "description": "형식(파일명) 클립의: ",
                     "balise": "가능한 태그들:",
                     "nbInfos": "{NUMBER}",
                     "nbInfosItalic": "는 각 클립을 1번 다운로드 할 때마다 1씩 증가하는 자동 증가 번호 입니다. 브라우저를 재시작 하면 초기화 됩니다."
@@ -196,13 +190,10 @@ var langs = {
                 "save_param": "설정 저장!"
             },
             "queue": {
-                "description": "대기열 설정",
+                "description": "대기열 페이지 설정",
                 "tips": "팁: 브라우저 설정에서 파일 다운로드 팝업을 비활성화 하십시오.",
-                "imageSize": {
-                    "description": "대기열의 섬네일 크기 (width vw=브라우저 폭의 1%)"
-                },
-                "titleSize": {
-                    "description": "대기열의 섬네일 제목 크기 (px)"
+                "previewScale": {
+                    "description": "의 크기의 축소판을 클립 큐에"
                 }
             }
         },

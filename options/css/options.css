@@ -6,10 +6,18 @@ body {
     background-color: #eeeeee;
 }
 
-.subOption {
+#slider-noUiSlider {
     margin-top: 1vh;
+}
+
+.subOption {
+    margin-top: 0.5vh;
     margin-left: 1vw;
     font-size: 90%;
+}
+
+.subOption:not(.firstSubOption) {
+    margin-top: 2.5vh;
 }
 
 .italic {

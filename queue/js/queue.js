@@ -1,32 +1,39 @@
-var lang;
+var lang, prevScaleVal;
 var queueClips = chrome.extension.getBackgroundPage().queueClips;
 
 document.addEventListener("DOMContentLoaded", function () {
-    setTimeout(function () {
-        let list = document.getElementsByClassName("lang");
-        lang = chrome.extension.getBackgroundPage().lang;
+    chrome.storage.local.get({
+        previewScale: 1.0
+    }, function (items) {
+        prevScaleVal = items.previewScale;
+        setTimeout(loadPage, 10);
+    });
+});
 
-        for (let i = 0; i < list.length; i++) {
-            let element = list[i];
-            element.innerText = getLang(lang, "queue." + element.id);
-        }
+function loadPage() {
+    let list = document.getElementsByClassName("lang");
+    lang = chrome.extension.getBackgroundPage().lang;
 
-        let menuList = ["remove_all", "back", "download_all"];
+    for (let i = 0; i < list.length; i++) {
+        let element = list[i];
+        element.innerText = getLang(lang, "queue." + element.id);
+    }
 
-        for (let i = 0; i < menuList.length; i++)
-            document.querySelector("#" + menuList[i]).addEventListener("click", () => {
-                actionButton(i + 1);
-            });
+    let menuList = ["remove_all", "back", "download_all"];
 
-        loadClips(false);
-    }, 10);
+    for (let i = 0; i < menuList.length; i++)
+        document.querySelector("#" + menuList[i]).addEventListener("click", () => {
+            actionButton(i + 1);
+        });
+
+    loadClips(false);
 
     chrome.runtime.onMessage.addListener(
         function (request, sender, sendResponse) {
             if (request.greeting == "queue-update")
                 loadClips(false);
         });
-});
+}
 
 function actionButton(type) {
     switch (type) {
@@ -104,33 +111,32 @@ function loadClips(checkLength) {
 
         for (let i = 0; i < queueClips.length; i++) {
             let clip = queueClips[i];
-            element.innerHTML += template.replace('{TITLE_C}', clip.title).replace(new RegExp('{SLUG_C}', 'g'), clip.slug).replace('{URL_C}', clip.url);
+            let newTitle = clip.title;
+            if (newTitle.length >= 50)
+                newTitle = newTitle.substring(0, 49) + "...";
+
+            let clipPreview = template.replace('{TITLE_C}', newTitle).replace(new RegExp('{SLUG_C}', 'g'), clip.slug).replace('{URL_C}', clip.url);
+            clipPreview = clipPreview.replace('{H3_CSS}', (1.05 * prevScaleVal) + "vw").replace('{IMG_CSS}', (30 * prevScaleVal) + "vw")
+
+            element.innerHTML += clipPreview;
 
             setTimeout(function () {
-                document.querySelector("#" + clip.slug).addEventListener("click", () => {
+                document.querySelector("#DEL_" + clip.slug).addEventListener("click", () => {
                     removeClip(document.getElementById("DIV_" + clip.slug), false);
+                });
+                document.querySelector("#DOW_" + clip.slug).addEventListener("click", () => {
+                    chrome.extension.getBackgroundPage().downloadMP4(clip.slug);
                 });
             }, 1);
         }
     }
-
-    loadCSS();
-}
-
-function loadCSS() {
-    chrome.storage.local.get({
-        queueImageSize: "30",
-        queueTitleSize: "20"
-    }, function (items) {
-        document.querySelectorAll("img").forEach(get => get.style.width = items.queueImageSize + "vw");
-        document.querySelectorAll("h3").forEach(get => get.style.fontSize = items.queueTitleSize + "px");
-    });
 }
 
 var template = ' <div id="DIV_{SLUG_C}" class="clipBlock w3-container w3-center">' +
-    '<h3> {TITLE_C} </h3>' +
-    '<img src="{URL_C}">' +
+    '<h3 style="font-size: {H3_CSS}"> {TITLE_C} </h3>' +
+    '<img style="width: {IMG_CSS}" src="{URL_C}">' +
     '<div class="space">' +
-    '<button class="w3-button w3-circle w3-badge w3-tiny w3-red" id="{SLUG_C}"><i style="padding: 0.25vh 0.35vw 0.25vh 0.35vw; font-size: 30px;" class="far fa-trash-alt"></i></button>' +
+    '<button style="margin-right: 0.5vw;" class="w3-button w3-circle w3-badge w3-tiny w3-blue" id="DOW_{SLUG_C}"><i style="padding: 0.20vh 0.15vw 0.20vh 0.15vw; font-size: 30px;" class="far fa-arrow-alt-circle-down"></i></button>' +
+    '<button class="w3-button w3-circle w3-badge w3-tiny w3-red" id="DEL_{SLUG_C}"><i style="padding: 0.20vh 0.25vw 0.20vh 0.25vw; font-size: 30px;" class="far fa-trash-alt"></i></button>' +
     '</div>' +
     '</div>';
