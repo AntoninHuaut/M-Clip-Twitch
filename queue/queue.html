@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>MClip Twitch Queue</title>
+    <link type="text/css" rel="stylesheet" href="../css/materialize.min.css" media="screen,projection" />
     <link rel="stylesheet" href="css/w3.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP"
         crossorigin="anonymous">
@@ -11,11 +12,17 @@
 </head>
 
 <body>
-    <div id="menu" class="w3-card-4 w3-center">
+    <div id="menu" class="w3-card-4">
         <div id="menuOption" class="w3-bar">
-            <button id="remove_all" class="lang w3-button w3-red"></button>
-            <button id="back" class="lang w3-button w3-blue"></button>
-            <button id="download_all" class="lang w3-button w3-green"></button>
+            <div id="iexport">
+                <button id="import" class="lang w3-button w3-blue-grey"></button>
+                <button id="export" class="lang w3-button w3-blue-grey"></button>
+            </div>
+            <div id="actionButtons">
+                <button id="remove_all" class="lang w3-button w3-red"></button>
+                <button id="back" class="lang w3-button w3-blue"></button>
+                <button id="download_all" class="lang w3-button w3-green">Export</button>
+            </div>
         </div>
     </div>
 
@@ -23,7 +30,9 @@
     </div>
 </body>
 
+<script type="text/javascript" src="../js/materialize.min.js"></script>
 <script src="../js/lang.js"></script>
+<script src="js/iexport.js"></script>
 <script src="js/queue.js"></script>
 
 </html>

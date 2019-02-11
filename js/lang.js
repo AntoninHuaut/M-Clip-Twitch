@@ -11,6 +11,7 @@ var langs = {
             "removeAllQueue": "Supprimer tous les clips de la liste d'attente"
         },
         "options": {
+            "name": "Options",
             "redirection": {
                 "description": "Redirection via l'icone (Sur un clip): ",
                 "general": "Page général (http://clips.maner.fr)",
@@ -54,10 +55,16 @@ var langs = {
             }
         },
         "queue": {
+            "import": "Importer",
+            "export": "Exporter",
             "no_clip": "Votre file d'attente de clips est vide",
             "download_all": "Tout télécharger",
             "remove_all": "Tout supprimer",
-            "back": "Retour"
+            "back": "Retour",
+            "notif": {
+                "import_err": "Erreur ! Fichier invalide",
+                "import_ok": "Importation effectuée"
+            }
         },
         "formatFile": [
             "{CLIPEUR}",
@@ -83,6 +90,7 @@ var langs = {
             "removeAllQueue": "Remove all clips from the queue"
         },
         "options": {
+            "name": "Settings",
             "redirection": {
                 "description": "Redirection from the icon (On a clip): ",
                 "general": "General page (http://clips.maner.fr)",
@@ -126,10 +134,16 @@ var langs = {
             }
         },
         "queue": {
+            "import": "Import",
+            "export": "Export",
             "no_clip": "Your clip queue is empty",
             "download_all": "Download all",
             "remove_all": "Delete all",
-            "back": "Back"
+            "back": "Back",
+            "notif": {
+                "import_err": "Error ! Invalid file",
+                "import_ok": "Import done"
+            }
         },
         "formatFile": [
             "{CLIPPER}",
@@ -155,6 +169,7 @@ var langs = {
             "removeAllQueue": "대기열에서 모든 클립 제거"
         },
         "options": {
+            "name": "설정",
             "redirection": {
                 "description": "아이콘에서 리다이렉션 (클립에서): ",
                 "general": "일반 페이지 (http://clips.maner.fr)",
@@ -198,10 +213,16 @@ var langs = {
             }
         },
         "queue": {
+            "import": "수입",
+            "export": "수출",
             "no_clip": "클립 대기열이 비어있습니다.",
             "download_all": "모두 다운로드",
             "remove_all": "모두 삭제",
-            "back": "뒤로"
+            "back": "뒤로",
+            "notif": {
+                "import_err": "오류! 유효하지 않은 파일",
+                "import_ok": "가져 오기 완료"
+            }
         }
     }
 };
