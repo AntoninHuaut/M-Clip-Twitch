@@ -208,20 +208,20 @@ var langs = {
                 "description": "대기열 페이지 설정",
                 "tips": "팁: 브라우저 설정에서 파일 다운로드 팝업을 비활성화 하십시오.",
                 "previewScale": {
-                    "description": "의 크기의 축소판을 클립 큐에"
+                    "description": "대기열에 있는 클립의 섬네일 크기"
                 }
             }
         },
         "queue": {
-            "import": "수입",
-            "export": "수출",
+            "import": "가져오기",
+            "export": "내보내기",
             "no_clip": "클립 대기열이 비어있습니다.",
             "download_all": "모두 다운로드",
             "remove_all": "모두 삭제",
             "back": "뒤로",
             "notif": {
                 "import_err": "오류! 유효하지 않은 파일",
-                "import_ok": "가져 오기 완료"
+                "import_ok": "가져오기 완료"
             }
         }
     }
