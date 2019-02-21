@@ -30,6 +30,7 @@ function save_options() {
   let pFormatMP4 = document.getElementById('formatMP4').value;
   let pFormatDate = document.getElementById('format.date').value;
   let pFormatTempsVOD = document.getElementById('format.tempsVOD').value;
+  let pPreviewType = document.getElementById('previewType').checked;
   let pPreviewScale = prevScaleSlider.noUiSlider.get() / 100;
 
   if (invalidChars.some(char => pFormatMP4.indexOf(char) > -1) ||
@@ -47,7 +48,8 @@ function save_options() {
     formatMP4: pFormatMP4,
     formatDate: pFormatDate,
     formatTempsVOD: pFormatTempsVOD,
-    previewScale: pPreviewScale
+    previewScale: pPreviewScale,
+    previewType: pPreviewType
   }, function () {
     M.toast({
       html: getLang(lang, "options.notif.save_param"),
@@ -62,12 +64,14 @@ function restore_options() {
     formatMP4: "{STREAMER}.{GAME} {TITLE}",
     formatDate: "DD-MM-YYYY",
     formatTempsVOD: "-NA-",
-    previewScale : 1.0
+    previewScale: 1.0,
+    previewType: true
   }, function (items) {
     document.getElementById('redirection').checked = items.redirection;
     document.getElementById('formatMP4').value = items.formatMP4;
     document.getElementById('format.date').value = items.formatDate;
     document.getElementById('format.tempsVOD').value = items.formatTempsVOD;
+    document.getElementById('previewType').checked = items.previewType;
     prevScaleSlider.noUiSlider.set(items.previewScale * 100);
   });
 

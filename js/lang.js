@@ -49,6 +49,11 @@ var langs = {
             "queue": {
                 "description": "Configuration de la page de file d'attente",
                 "tips": "Astuce: désactivez dans les paramètres de votre navigateur la popup de téléchargement de fichiers",
+                "previewType": {
+                    "description": "Type des vignettes",
+                    "picture": "Image",
+                    "video": "Vidéo"
+                },
                 "previewScale": {
                     "description": "Taille des vignettes des clips de la file d'attente"
                 }
@@ -128,6 +133,11 @@ var langs = {
             "queue": {
                 "description": "Configuring the queue page",
                 "tips": "Tip: disable the file download popup in your browser settings",
+                "previewType": {
+                    "description": "Type of thumbnails",
+                    "picture": "Picture",
+                    "video": "Video"
+                },
                 "previewScale": {
                     "description": "Size of the thumbnails of the clips in the queue"
                 }
@@ -207,6 +217,11 @@ var langs = {
             "queue": {
                 "description": "대기열 페이지 설정",
                 "tips": "팁: 브라우저 설정에서 파일 다운로드 팝업을 비활성화 하십시오.",
+                "previewType": {
+                    "description": "섬네일 종류",
+                    "picture": "이미지",
+                    "video": "비디오"
+                },
                 "previewScale": {
                     "description": "대기열에 있는 클립의 섬네일 크기"
                 }

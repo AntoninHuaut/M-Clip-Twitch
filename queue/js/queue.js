@@ -1,11 +1,13 @@
-var lang, prevScaleVal;
+var lang, prevScaleVal, previewType;
 var queueClips = chrome.extension.getBackgroundPage().queueClips;
 
 document.addEventListener("DOMContentLoaded", function () {
     chrome.storage.local.get({
-        previewScale: 1.0
+        previewScale: 1.0,
+        previewType: true
     }, function (items) {
         prevScaleVal = items.previewScale;
+        previewType = items.previewType;
         setTimeout(loadPage, 10);
     });
 });
@@ -67,27 +69,49 @@ function loadClips(slug, type) {
             if (newTitle.length >= 50)
                 newTitle = newTitle.substring(0, 49) + "...";
 
-            let clipPreview = template.replace('{TITLE_C}', newTitle).replace(new RegExp('{SLUG_C}', 'g'), clip.slug).replace('{URL_C}', clip.url);
-            clipPreview = clipPreview.replace('{H3_CSS}', (1.05 * prevScaleVal) + "vw").replace('{IMG_CSS}', (30 * prevScaleVal) + "vw");
+            let clipPreview = template
+                .replace('{PREVIEW_TYPE}', !previewType ? imgTemp : videoTemp)
+                .replace('{TITLE_C}', newTitle)
+                .replace(new RegExp('{SLUG_C}', 'g'), clip.slug)
+                .replace('{URL_C}', clip.url)
+                .replace('{H3_CSS}', (1.05 * prevScaleVal) + "vw")
+                .replace('{IMG_CSS}', 30 * prevScaleVal + "vw");
 
             let clipDiv = document.createElement('div');
             document.getElementById('clipsList').appendChild(clipDiv);
-            clipDiv.outerHTML = clipPreview.trim();
 
-            setTimeout(function () {
-                document.querySelector("#DEL_" + clip.slug).addEventListener("click", () => {
-                    sendRequestDelete(clip.slug);
+            if (previewType)
+                fetch("https://clips.twitch.tv/api/v2/clips/" + clip.slug + "/status").then(res => {
+                    return res.json();
+                }).then(js => {
+                    let url = js.quality_options[0].source;
+                    addClipBlock(clipDiv, clipPreview.replace('{VIDEO_SRC}', url), clip.slug);
                 });
-                document.querySelector("#DOW_" + clip.slug).addEventListener("click", () => {
-                    chrome.extension.getBackgroundPage().downloadMP4(clip.slug);
-                });
-            }, 10);
+            else
+                addClipBlock(clipDiv, clipPreview, clip.slug);
         }
 
     else if (type == "remove")
         removeClipBlock(null, slug);
 
     checkMessageLength();
+}
+
+function addClipBlock(clipDiv, clipPreview, slug) {
+    clipDiv.outerHTML = clipPreview.trim();
+
+    clipDiv.onload = function () {
+        document.querySelector("#DEL_" + slug).addEventListener("click", () => {
+            sendRequestDelete(slug);
+        });
+
+        document.querySelector("#DOW_" + slug).addEventListener("click", () => {
+            chrome.extension.getBackgroundPage().downloadMP4(slug);
+        });
+
+        if (previewType)
+            document.querySelector("#VIDEO_" + slug).load();
+    }
 }
 
 function checkMessageLength() {
@@ -128,14 +152,22 @@ function removeClipBlock(element, slug) {
     else
         slug = element.id.replace('DIV_', '');
 
-    element.parentNode.removeChild(element);
+    if (!!element)
+        element.parentNode.removeChild(element);
+    else
+        setTimeout(() => removeClipBlock(null, slug), 100);
 }
 
 var template = ' <div id="DIV_{SLUG_C}" class="clipBlock w3-container w3-center">' +
     '<h3 style="font-size: {H3_CSS}"> {TITLE_C} </h3>' +
-    '<img style="width: {IMG_CSS}" src="{URL_C}">' +
+    '{PREVIEW_TYPE}' +
     '<div class="space">' +
     '<button style="margin-right: 0.5vw;" class="w3-button w3-circle w3-badge w3-tiny w3-blue" id="DOW_{SLUG_C}"><i style="padding: 0.20vh 0.15vw 0.20vh 0.15vw; font-size: 30px;" class="far fa-arrow-alt-circle-down"></i></button>' +
     '<button class="w3-button w3-circle w3-badge w3-tiny w3-red" id="DEL_{SLUG_C}"><i style="padding: 0.20vh 0.25vw 0.20vh 0.25vw; font-size: 30px;" class="far fa-trash-alt"></i></button>' +
     '</div>' +
     '</div>';
+
+var imgTemp = '<img style="width: {IMG_CSS}" src="{URL_C}">';
+var videoTemp = '<video preload="metadata" id="VIDEO_{SLUG_C}" style="width: {IMG_CSS}" poster="{URL_C}" controls>' +
+    '<source src="{VIDEO_SRC}" type="video/mp4">' +
+    '</video>';

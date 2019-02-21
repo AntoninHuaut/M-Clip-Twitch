@@ -84,7 +84,7 @@ function editTwitch() {
 		if ([SiteEnum.CLIPS_TW, SiteEnum.TW_U_CLIP].includes(typeSite))
 			slugAr[0] = getSlugURL(location.href);
 		else if (typeSite == SiteEnum.TW_U_MANAGER_CLIPS)
-			slugAr[0] = getSlugURL(document.querySelector('div.tw-aspect.tw-aspect--16x9.tw-aspect--align-top').querySelector('iframe').src);
+			slugAr[0] = getSlugURL(document.querySelector('.tw-aspect.tw-aspect--align-top iframe').src);
 
 	} else if (typeSite == SiteEnum.TW_U_CLIP_LIST) {
 		if (divButtons.length == 0 || (divButtons.length == slugAr.length && getMTButtons() == slugAr.length))
@@ -142,7 +142,7 @@ function initButtons(typeSite, lang, divButtons, indexStartSlug) {
 		if (typeSite == SiteEnum.TW_U_CLIP_LIST)
 			continue;
 
-		triggerButtonsClipsList('.manageQueueClip.' + slugEl);
+		triggerButtonsClipsList('.manageQueueClip');
 	}
 
 	sendCheckSlug();
@@ -309,7 +309,7 @@ function setupButtonsClipsList() {
 	addButton(SiteEnum.TW_U_CLIP_LIST_MENU, "manageQueue", 2, lang, navBar);
 	triggerButtonsClipsList('.addAllQueue');
 	triggerButtonsClipsList('.removeAllQueue');
-	triggerButtonsClipsList('.manageQueue');
+	triggerButtonsClipsList('.manageQueueClip');
 }
 
 function triggerButtonsClipsList(className) {
@@ -332,7 +332,7 @@ function triggerButtonsClipsList(className) {
 				updateButQueue(lang, slug, className == ".removeAllQueue");
 			}
 		};
-	} else if (className == ".manageQueue") {
+	} else if (className == ".manageQueueClip") {
 		func = function () {
 			setTimeout(function () {
 				window.open(chrome.runtime.getURL("/queue/queue.html"));
