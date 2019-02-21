@@ -18,16 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function importQueue(data) {
-    try {
-        data = JSON.parse(data);
-
-        if (!Array.isArray(data) || data.length == 0)
-            throw new Error();
-
-        for (let i = 0; i < data.length; i++)
-            if (!data[i] || !data[i].slug || !data[i].url || !data[i].title)
-                throw new Error();
-    } catch (err) {
+    if (!isValidQueueClips(data)) {
         M.toast({
             html: getLang(lang, "queue.notif.import_err"),
             displayLength: 3000,
@@ -36,22 +27,23 @@ function importQueue(data) {
         return;
     }
 
+    data = JSON.parse(data);
+
     let slugs = [];
 
     for (let i = 0; i < queueClips.length; i++)
         slugs[slugs.length] = queueClips[i].slug;
 
-    let baseIndex = queueClips.length;
-
     for (let i = 0; i < data.length; i++) {
         if (slugs.includes(data[i].slug))
             continue;
 
-        let index = baseIndex + i;
-        queueClips[index] = data[i];
+        chrome.runtime.sendMessage({
+            greeting: "addSlugQueue",
+            slug: data[i].slug
+        });
     }
 
-    loadClips(false);
     M.toast({
         html: getLang(lang, "queue.notif.import_ok"),
         displayLength: 3000,
@@ -59,26 +51,43 @@ function importQueue(data) {
     });
 }
 
+function saveData(data, fileName) {
+    let a = document.createElement("a");
+    document.body.appendChild(a);
+    a.style = "display: none";
+
+    let json = JSON.stringify(data);
+    let blob = new Blob([json], {
+        type: "octet/stream"
+    });
+    let url = window.URL.createObjectURL(blob);
+
+    a.href = url;
+    a.download = fileName;
+    a.click();
+    window.URL.revokeObjectURL(url);
+};
+
 function getDate(date) {
     return (1 + date.getMonth()).toString().padStart(2, '0') + '/' + date.getDate().toString().padStart(2, '0') + '/' + date.getFullYear();
 }
 
-var saveData = (function () {
-    var a = document.createElement("a");
-    document.body.appendChild(a);
-    a.style = "display: none";
-    return function (data, fileName) {
-        var json = JSON.stringify(data),
-            blob = new Blob([json], {
-                type: "octet/stream"
-            }),
-            url = window.URL.createObjectURL(blob);
-        a.href = url;
-        a.download = fileName;
-        a.click();
-        window.URL.revokeObjectURL(url);
-    };
-}());
+function isValidQueueClips(data) {
+    try {
+        data = JSON.parse(data);
+
+        if (!Array.isArray(data) || data.length == 0)
+            return false;
+
+        for (let i = 0; i < data.length; i++)
+            if (!data[i] || !data[i].slug || !data[i].url || !data[i].title)
+                return false;
+
+        return data;
+    } catch (err) {}
+
+    return false;
+}
 
 function requestFile() {
     var fileChooser = document.createElement("input");

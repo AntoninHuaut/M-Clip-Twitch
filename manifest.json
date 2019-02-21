@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "M Clip Twitch",
   "description": "Download Twitch clips with a title in a configurable format and quickly access its VOD",
-  "version": "1.9.1",
+  "version": "1.9.2",
   "options_ui": {
     "page": "options/options.html",
     "open_in_tab": true
@@ -17,7 +17,8 @@
     "scripts": [
       "js/moment.js",
       "js/lang.js",
-      "background.js"
+      "background.js",
+      "downloadClip.js"
     ]
   },
   "content_scripts": [{

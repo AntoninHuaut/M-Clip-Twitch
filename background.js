@@ -4,8 +4,10 @@ var delay = null;
 var lang;
 var queueClips = [];
 
+// Load storage
 chrome.storage.local.get({
-	language: "en"
+	language: "en",
+	queueClips: []
 }, function (items) {
 	if (typeof (items.language) == "boolean") // CONVERSION ANCIENNE VERSION EXTENSION
 		chrome.storage.local.set({
@@ -15,8 +17,17 @@ chrome.storage.local.get({
 		});
 	else
 		lang = items.language;
+
+	queueClips = items.queueClips;
 });
 
+function saveQueueClips() {
+	chrome.storage.local.set({
+		queueClips: queueClips
+	});
+}
+
+// Click on the extension icon
 chrome.browserAction.onClicked.addListener(function (cTab) {
 	chrome.tabs.query({
 		active: true,
@@ -63,6 +74,78 @@ chrome.browserAction.onClicked.addListener(function (cTab) {
 	});
 });
 
+// Content scripts
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+	if (request.greeting == "startDownloadMP4")
+		downloadMP4(request.slug);
+
+	// twitch.js
+	else if (request.greeting == "checkSlugDuplicate") {
+		sendToAllTabs({
+			greeting: "check-slug-duplicate",
+			slugEl: request.slug,
+			isDuplicate: isInQueue(request.slug)
+		});
+	} else if (request.greeting == "addSlugQueue") {
+		if (isInQueue(request.slug)) {
+			sendToAllTabs({
+				greeting: "check-slug-duplicate",
+				slugEl: request.slug,
+				isDuplicate: true
+			});
+		} else {
+			fetch("https://clips.twitch.tv/api/v2/clips/" + request.slug)
+				.then(function (res) {
+					return res.json();
+				})
+				.then(function (js) {
+					queueClips[queueClips.length] = {
+						"slug": request.slug,
+						"url": js.preview_image,
+						"title": js.title
+					};
+
+					sendToAllTabs({
+						greeting: "queue-update",
+						type: "add",
+						slugEl: request.slug,
+						isDuplicate: true
+					});
+
+					saveQueueClips();
+				});
+		}
+	} else if (request.greeting == "removeSlugQueue") {
+		if (!isInQueue(request.slug)) {
+			sendToAllTabs({
+				greeting: "check-slug-duplicate",
+				slugEl: request.slug,
+				isDuplicate: false
+			});
+		} else {
+			for (let i = 0; i < queueClips.length; i++)
+				if (queueClips[i].slug == request.slug) {
+					queueClips.splice(queueClips.indexOf(queueClips[i]), 1);
+					break;
+				}
+
+			sendToAllTabs({
+				greeting: "queue-update",
+				type: "remove",
+				slugEl: request.slug,
+				isDuplicate: false
+			});
+
+			saveQueueClips();
+		}
+	} else if (request.greeting == "request-lang") {
+		sendToAllTabs({
+			greeting: "get-lang",
+			lang: lang
+		});
+	}
+});
+
 function isInQueue(slug) {
 	for (let i = 0; i < queueClips.length; i++)
 		if (queueClips[i].slug == slug)
@@ -71,81 +154,6 @@ function isInQueue(slug) {
 	return false;
 }
 
-chrome.runtime.onMessage.addListener(
-	function (request, sender, sendResponse) {
-		if (request.greeting == "startDownloadMP4")
-			downloadMP4(request.slug);
-
-		// queue.js
-		else if (request.greeting == "queue-delete-clip") {
-			sendToAllTabs({
-				greeting: "queue-update",
-				slugEl: request.slug,
-				isDuplicate: isInQueue(request.slug)
-			});
-		}
-
-		// twitch.js
-		else if (request.greeting == "checkSlugDuplicate") {
-			sendToAllTabs({
-				greeting: "check-slug-duplicate",
-				slugEl: request.slug,
-				isDuplicate: isInQueue(request.slug)
-			});
-		} else if (request.greeting == "addSlugQueue") {
-			if (isInQueue(request.slug)) {
-				sendToAllTabs({
-					greeting: "check-slug-duplicate",
-					slugEl: request.slug,
-					isDuplicate: true
-				});
-			} else {
-				fetch("https://clips.twitch.tv/api/v2/clips/" + request.slug)
-					.then(function (res) {
-						return res.json();
-					})
-					.then(function (js) {
-						queueClips[queueClips.length] = {
-							"slug": request.slug,
-							"url": js.preview_image,
-							"title": js.title
-						};
-
-						sendToAllTabs({
-							greeting: "queue-update",
-							slugEl: request.slug,
-							isDuplicate: true
-						});
-					});
-			}
-		} else if (request.greeting == "removeSlugQueue") {
-			if (!isInQueue(request.slug)) {
-				sendToAllTabs({
-					greeting: "check-slug-duplicate",
-					slugEl: request.slug,
-					isDuplicate: false
-				});
-			} else {
-				for (let i = 0; i < queueClips.length; i++)
-					if (queueClips[i].slug == request.slug) {
-						queueClips.splice(queueClips.indexOf(queueClips[i]), 1);
-						break;
-					}
-
-				sendToAllTabs({
-					greeting: "queue-update",
-					slugEl: request.slug,
-					isDuplicate: false
-				});
-			}
-		} else if (request.greeting == "request-lang") {
-			sendToAllTabs({
-				greeting: "get-lang",
-				lang: lang
-			});
-		}
-	});
-
 function sendToAllTabs(json) {
 	chrome.tabs.query({}, function (tabs) {
 		for (let i = 0; i < tabs.length; ++i)
@@ -153,63 +161,7 @@ function sendToAllTabs(json) {
 	});
 }
 
-var increment = 1;
-
-function downloadMP4(slug) {
-	let index = [slug + "/status", slug]
-	let proms = index.map(data => fetch("https://clips.twitch.tv/api/v2/clips/" + data));
-
-	Promise.all(proms)
-		.then(ps => Promise.all(ps.map(p => p.json())))
-		.then(js => {
-			let urlClip = js[0].quality_options[0].source;
-			let resClip = js[1];
-
-			chrome.storage.local.get({
-				formatMP4: "{STREAMER}.{GAME} {TITLE}",
-				formatDate: "DD-MM-YYYY",
-				formatTempsVOD: "-NA-"
-			}, function (items) {
-				let time = items.formatTempsVOD;
-
-				if (!!resClip.vod_url) {
-					let tParam = getParameterByName('t', resClip.vod_url);
-
-					if (tParam.includes('h')) {
-						time = tParam.split('h')[0];
-						tParam = tParam.split('h')[1];
-						time += moment(tParam, "mm[m]ss[s]").format("mmss");
-					} else if (tParam.includes('m'))
-						time = moment(tParam, "mm[m]ss[s]").format("[00]mmss");
-					else
-						time = moment(tParam, "ss[s]").format("[0000]ss");
-				}
-
-				let replaces = [resClip.curator_display_name, moment(new Date(resClip.created_at)).format(items.formatDate),
-					resClip.duration, resClip.game, increment, resClip.slug, resClip.broadcaster_display_name, time, resClip.title, resClip.views
-				];
-
-				let fileName = items.formatMP4.rep(replaces).replace(/[\/\\\*\?\<\>\:\"\|\~]/g, '_'); // Deleting characters that prevent the file from being saved.
-
-				chrome.downloads.download({
-					url: urlClip,
-					filename: fileName + ".mp4"
-				});
-
-				increment++;
-			});
-		});
-}
-
-String.prototype.rep = function (replaces) {
-	let str = this.toString();
-
-	for (let i = 0; i < getLang(lang, "formatFile").length; i++)
-		str = str.replace(getLang(lang, "formatFile")[i], replaces[i]);
-
-	return str;
-};
-
+// Update
 chrome.runtime.onInstalled.addListener(details => {
 	if (compareVersion(details.previousVersion, chrome.runtime.getManifest().version))
 		return;
@@ -220,15 +172,6 @@ chrome.runtime.onInstalled.addListener(details => {
 		});
 	}
 });
-
-function getParameterByName(name, url) {
-	name = name.replace(/[\[\]]/g, '\\$&');
-	var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-		results = regex.exec(url);
-	if (!results) return null;
-	if (!results[2]) return '';
-	return decodeURIComponent(results[2].replace(/\+/g, ' '));
-}
 
 function compareVersion(previous, actual) {
 	if (!previous)
