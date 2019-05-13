@@ -60,7 +60,7 @@ function editTwitch() {
 
 	else if (typeSite == SiteEnum.TW_U_CLIP) {
 		divButtons = document.querySelector('div.tw-align-items-center.tw-flex.tw-flex-column.tw-flex-nowrap.tw-justify-content-start.tw-md-flex-row');
-
+		
 		if (!hasShareButton(divButtons))
 			return;
 
@@ -68,7 +68,7 @@ function editTwitch() {
 		divButtons = document.querySelectorAll('div.preview-card');
 	else if (typeSite == SiteEnum.TW_U_MANAGER_CLIPS)
 		divButtons = document.querySelector('div.tw-align-items-center.tw-border-b.tw-c-background-alt.tw-flex.tw-justify-content-between.tw-pd-1');
-
+	
 	if (divButtons == null || !chrome.runtime)
 		return;
 
@@ -85,7 +85,6 @@ function editTwitch() {
 			slugAr[0] = getSlugURL(location.href);
 		else if (typeSite == SiteEnum.TW_U_MANAGER_CLIPS)
 			slugAr[0] = getSlugURL(document.querySelector('.tw-aspect.tw-aspect--align-top iframe').src);
-
 	} else if (typeSite == SiteEnum.TW_U_CLIP_LIST) {
 		if (divButtons.length == 0 || (divButtons.length == slugAr.length && getMTButtons() == slugAr.length))
 			return;
@@ -356,5 +355,5 @@ function getMTButtons() {
 }
 
 function hasShareButton(element) {
-	return !!element && !!element.querySelector("button.tw-interactive.tw-button.tw-button--hollow");
+	return !!element && !!element.querySelector("button.tw-interactive.tw-core-button--hollow");
 }
