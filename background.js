@@ -80,7 +80,9 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 		downloadMP4(request.slug);
 
 	// twitch.js
-	else if (request.greeting == "checkSlugDuplicate") {
+	else if (request.greeting == "downloadQueueClip") {
+		downloadQueue();
+	} else if (request.greeting == "checkSlugDuplicate") {
 		sendToAllTabs({
 			greeting: "check-slug-duplicate",
 			slugEl: request.slug,
@@ -123,19 +125,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 				isDuplicate: false
 			});
 		} else {
-			for (let i = 0; i < queueClips.length; i++)
-				if (queueClips[i].slug == request.slug) {
-					queueClips.splice(queueClips.indexOf(queueClips[i]), 1);
-					break;
-				}
-
-			sendToAllTabs({
-				greeting: "queue-update",
-				type: "remove",
-				slugEl: request.slug,
-				isDuplicate: false
-			});
-
+			removeSlugInfo(request.slug);
 			saveQueueClips();
 		}
 	} else if (request.greeting == "request-lang") {
@@ -145,6 +135,21 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 		});
 	}
 });
+
+function removeSlugInfo(slugValue) {
+	for (let i = 0; i < queueClips.length; i++)
+		if (queueClips[i].slug == slugValue) {
+			queueClips.splice(queueClips.indexOf(queueClips[i]), 1);
+			break;
+		}
+
+	sendToAllTabs({
+		greeting: "queue-update",
+		type: "remove",
+		slugEl: slugValue,
+		isDuplicate: false
+	});
+}
 
 function isInQueue(slug) {
 	for (let i = 0; i < queueClips.length; i++)

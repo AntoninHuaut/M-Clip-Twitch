@@ -33,6 +33,10 @@ h3 {
     position: relative;
 }
 
+#menuOption #actionButtons {
+    font-size: 18px;
+}
+
 #iexport {
     position: absolute;
 }

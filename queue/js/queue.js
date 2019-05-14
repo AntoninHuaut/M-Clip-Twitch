@@ -48,7 +48,9 @@ function actionButton(type) {
             break;
 
         case 2:
-            queueClips.forEach(get => chrome.extension.getBackgroundPage().downloadMP4(get.slug));
+            chrome.runtime.sendMessage({
+                greeting: "downloadQueueClip"
+            });
             break;
     }
 }
@@ -100,18 +102,16 @@ function loadClips(slug, type) {
 function addClipBlock(clipDiv, clipPreview, slug) {
     clipDiv.outerHTML = clipPreview.trim();
 
-    clipDiv.onload = function () {
-        document.querySelector("#DEL_" + slug).addEventListener("click", () => {
-            sendRequestDelete(slug);
-        });
+    document.querySelector("#DEL_" + slug).addEventListener("click", () => {
+        sendRequestDelete(slug);
+    });
 
-        document.querySelector("#DOW_" + slug).addEventListener("click", () => {
-            chrome.extension.getBackgroundPage().downloadMP4(slug);
-        });
+    document.querySelector("#DOW_" + slug).addEventListener("click", () => {
+        chrome.extension.getBackgroundPage().downloadMP4(slug);
+    });
 
-        if (previewType)
-            document.querySelector("#VIDEO_" + slug).load();
-    }
+    if (previewType)
+        document.querySelector("#VIDEO_" + slug).load();
 }
 
 function checkMessageLength() {
@@ -152,6 +152,8 @@ function removeClipBlock(element, slug) {
     else
         slug = element.id.replace('DIV_', '');
 
+    console.log(!element);
+
     if (!!element)
         element.parentNode.removeChild(element);
     else
@@ -163,7 +165,7 @@ var template = ' <div id="DIV_{SLUG_C}" class="clipBlock w3-container w3-center"
     '{PREVIEW_TYPE}' +
     '<div class="space">' +
     '<button style="margin-right: 0.5vw;" class="w3-button w3-circle w3-badge w3-tiny w3-blue" id="DOW_{SLUG_C}"><i style="padding: 0.20vh 0.15vw 0.20vh 0.15vw; font-size: 30px;" class="far fa-arrow-alt-circle-down"></i></button>' +
-    '<button class="w3-button w3-circle w3-badge w3-tiny w3-red" id="DEL_{SLUG_C}"><i style="padding: 0.20vh 0.25vw 0.20vh 0.25vw; font-size: 30px;" class="far fa-trash-alt"></i></button>' +
+    '<button class="w3-button w3-circle w3-badge w3-tiny w3-red" id="DEL_{SLUG_C}"><i style="padding: 0.20vh 0.25vw 0.20vh 0.25vw; font-size: 30px;" class="fas fa-minus"></i></button>' +
     '</div>' +
     '</div>';
 

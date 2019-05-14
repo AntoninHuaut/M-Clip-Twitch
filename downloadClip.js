@@ -1,5 +1,26 @@
 var increment = 1;
 
+function downloadQueue() {
+	chrome.storage.local.get({
+		removeDownloadClip: false
+	}, function (items) {
+		let removeDownloadClip = items.removeDownloadClip;
+		let removeClips = [];
+
+		queueClips.forEach(clipInfo => {
+			downloadMP4(clipInfo.slug)
+
+			if (removeDownloadClip)
+				removeClips.push(clipInfo.slug);
+		});
+
+		if (removeDownloadClip) {
+			removeClips.forEach(slug => removeSlugInfo(slug));
+			saveQueueClips();
+		}
+	});
+}
+
 function downloadMP4(slug) {
 	let index = [slug + "/status", slug]
 	let proms = index.map(data => fetch("https://clips.twitch.tv/api/v2/clips/" + data));
@@ -47,7 +68,7 @@ function downloadMP4(slug) {
 }
 
 String.prototype.rep = function (replaces) {
-    let str = this.toString();
+	let str = this.toString();
 
 	for (let i = 0; i < getLang(lang, "formatFile").length; i++)
 		str = str.replace(getLang(lang, "formatFile")[i], replaces[i]);

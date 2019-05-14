@@ -4,11 +4,11 @@ var langs = {
         "name": "Français",
         "buttons": {
             "downloadClip": "Télécharger",
-            "addQueue": "Ajouter à la liste d'attente",
-            "removeQueue": "Supprimer de la liste d'attente",
-            "manageQueue": "Gérer la liste d'attente",
-            "addAllQueue": "Ajouter tous les clips à la liste d'attente",
-            "removeAllQueue": "Supprimer tous les clips de la liste d'attente"
+            "addQueue": "Ajouter à la file d'attente",
+            "removeQueue": "Retirer de la file d'attente",
+            "manageQueue": "Gérer la file d'attente",
+            "addAllQueue": "Ajouter tous les clips à la file d'attente",
+            "removeAllQueue": "Retirer tous les clips de la file d'attente"
         },
         "options": {
             "name": "Options",
@@ -54,6 +54,11 @@ var langs = {
                     "picture": "Image",
                     "video": "Vidéo"
                 },
+                "removeDownloadClip": {
+                    "description": "Retirer les clips téléchargés de la file d'attente",
+                    "disable": "Désactivé",
+                    "enable": "Activé"
+                },
                 "previewScale": {
                     "description": "Taille des vignettes des clips de la file d'attente"
                 }
@@ -63,8 +68,8 @@ var langs = {
             "import": "Importer",
             "export": "Exporter",
             "no_clip": "Votre file d'attente de clips est vide",
-            "download_all": "Tout télécharger",
-            "remove_all": "Tout supprimer",
+            "download_all": "Télécharger les clips de la file",
+            "remove_all": "Vider la file",
             "back": "Retour",
             "notif": {
                 "import_err": "Erreur ! Fichier invalide",
@@ -138,6 +143,11 @@ var langs = {
                     "picture": "Picture",
                     "video": "Video"
                 },
+                "removeDownloadClip": {
+                    "description": "Remove downloaded clips from the queue",
+                    "disable": "Desactivate",
+                    "enable": "Activate"
+                },
                 "previewScale": {
                     "description": "Size of the thumbnails of the clips in the queue"
                 }
@@ -147,8 +157,8 @@ var langs = {
             "import": "Import",
             "export": "Export",
             "no_clip": "Your clip queue is empty",
-            "download_all": "Download all",
-            "remove_all": "Delete all",
+            "download_all": "Download all clips from the queue",
+            "remove_all": "Empty the queue",
             "back": "Back",
             "notif": {
                 "import_err": "Error ! Invalid file",
@@ -222,6 +232,11 @@ var langs = {
                     "picture": "이미지",
                     "video": "비디오"
                 },
+                "removeDownloadClip": {
+                    "description": "대기열에서 다운로드 끝난 클립들 삭제",
+                    "disable": "비활성화",
+                    "enable": "활성화"
+                },
                 "previewScale": {
                     "description": "대기열에 있는 클립의 섬네일 크기"
                 }
@@ -231,8 +246,8 @@ var langs = {
             "import": "가져오기",
             "export": "내보내기",
             "no_clip": "클립 대기열이 비어있습니다.",
-            "download_all": "모두 다운로드",
-            "remove_all": "모두 삭제",
+            "download_all": "대기열의 모든 클립 다운로드",
+            "remove_all": "대기열 비우기",
             "back": "뒤로",
             "notif": {
                 "import_err": "오류! 유효하지 않은 파일",

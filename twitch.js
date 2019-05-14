@@ -12,10 +12,12 @@ var BouttonsEnum = {
 	ADD_QUEUE: 1,
 	MANAGE_QUEUE: 2,
 	ADD_ALL_QUEUE: 3,
-	REMOVE_ALL_QUEUE: 4
+	REMOVE_ALL_QUEUE: 4,
+	DOWNLOAD_QUEUE_CLIP: 5
 };
 
 var urlsButtons = {
+	"downloadQueueClip": "https://i.imgur.com/bQiadMo.png",
 	"downloadClip": "https://i.imgur.com/t1Le37l.png",
 	"addQueue": "https://i.imgur.com/QUcfpvv.png",
 	"removeQueue": "https://i.imgur.com/0HsqipO.png",
@@ -60,7 +62,7 @@ function editTwitch() {
 
 	else if (typeSite == SiteEnum.TW_U_CLIP) {
 		divButtons = document.querySelector('div.tw-align-items-center.tw-flex.tw-flex-column.tw-flex-nowrap.tw-justify-content-start.tw-md-flex-row');
-		
+
 		if (!hasShareButton(divButtons))
 			return;
 
@@ -68,7 +70,7 @@ function editTwitch() {
 		divButtons = document.querySelectorAll('div.preview-card');
 	else if (typeSite == SiteEnum.TW_U_MANAGER_CLIPS)
 		divButtons = document.querySelector('div.tw-align-items-center.tw-border-b.tw-c-background-alt.tw-flex.tw-justify-content-between.tw-pd-1');
-	
+
 	if (divButtons == null || !chrome.runtime)
 		return;
 
@@ -237,6 +239,10 @@ function addButton(typeSite, slugEl, typeButton, lang, get) {
 		infos = getLang(lang, "buttons.removeAllQueue");
 		trigger = "removeAllQueue";
 		button = button.replace('{IMG_URL', urlsButtons.removeQueue);
+	} else if (typeButton == BouttonsEnum.DOWNLOAD_QUEUE_CLIP) {
+		infos = getLang(lang, "queue.download_all");
+		trigger = "downloadQueueClip";
+		button = button.replace('{IMG_URL', urlsButtons.downloadQueueClip);
 	}
 
 	button = button.replace('{TRIGGER}', trigger + " " + slugEl);
@@ -305,10 +311,12 @@ function setupButtonsClipsList() {
 	navBar = navBar.querySelector('div.ButtonsClipsList');
 	addButton(SiteEnum.TW_U_CLIP_LIST_MENU, "addAllQueue", 3, lang, navBar);
 	addButton(SiteEnum.TW_U_CLIP_LIST_MENU, "removeAllQueue", 4, lang, navBar);
+	addButton(SiteEnum.TW_U_CLIP_LIST_MENU, "downloadQueueClip", 5, lang, navBar);
 	addButton(SiteEnum.TW_U_CLIP_LIST_MENU, "manageQueue", 2, lang, navBar);
 	triggerButtonsClipsList('.addAllQueue');
 	triggerButtonsClipsList('.removeAllQueue');
 	triggerButtonsClipsList('.manageQueueClip');
+	triggerButtonsClipsList('.downloadQueueClip');
 }
 
 function triggerButtonsClipsList(className) {
@@ -336,6 +344,12 @@ function triggerButtonsClipsList(className) {
 			setTimeout(function () {
 				window.open(chrome.runtime.getURL("/queue/queue.html"));
 			}, 50); // Prevent freeze queue.html
+		};
+	} else if (className == ".downloadQueueClip") {
+		func = function () {
+			chrome.runtime.sendMessage({
+				greeting: "downloadQueueClip"
+			});
 		};
 	}
 
