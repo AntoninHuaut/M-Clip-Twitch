@@ -61,7 +61,7 @@ function editTwitch() {
 		divButtons = document.querySelector('div.tw-align-items-center.tw-flex.tw-justify-content-end.tw-mg-y-1.tw-relative.tw-z-above');
 
 	else if (typeSite == SiteEnum.TW_U_CLIP) {
-		divButtons = document.querySelector('div.tw-align-items-center.tw-flex.tw-flex-column.tw-flex-nowrap.tw-justify-content-start.tw-md-flex-row');
+		divButtons = document.querySelector('div.video-info-bar__action-container');
 
 		if (!hasShareButton(divButtons))
 			return;
@@ -369,5 +369,5 @@ function getMTButtons() {
 }
 
 function hasShareButton(element) {
-	return !!element && !!element.querySelector("button.tw-interactive.tw-core-button--hollow");
+	return !!element && !!element.querySelector("button.tw-interactive.tw-core-button");
 }
