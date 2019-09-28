@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "M Clip Twitch",
   "description": "Download Twitch clips with a title in a configurable format and quickly access its VOD",
-  "version": "1.11.1",
+  "version": "1.12.0",
   "options_ui": {
     "page": "options/options.html",
     "open_in_tab": true
@@ -27,7 +27,8 @@
       "*://*.twitch.tv/*"
     ],
     "js": [
-      "js/lang.js", "twitch.js"
+      "js-content/utils.js", "js/lang.js", "js-content/vars.js", "js-content/buttonsUtils.js",
+      "js-content/manageButtons.js", "js-content/manageButtonsList.js", "js-content/init.js"
     ]
   }],
   "commands": {
