@@ -52,7 +52,6 @@ function getButton_TypeSite(typeSite, htmlInsert) {
         extraMDClass: "",
         extraMDStyle: "",
         extraSDStyle: "",
-        imgWidth: "",
         insertIndex: 0,
         htmlInsert: undefined
     }
@@ -67,7 +66,6 @@ function getButton_TypeSite(typeSite, htmlInsert) {
             break;
 
         case SiteEnum.TW_U_CLIP_LIST:
-            json.imgWidth = 'width="90%"';
             json.extraSDStyle = 'margin-right: 5px;';
             json.extraMDStyle = "margin-top: 0.5vh;"
             json.htmlInsert = json.htmlInsert.querySelector("div.preview-card__titles-wrapper.tw-flex-grow-1.tw-flex-shrink-1.tw-full-width").querySelector("div");
@@ -75,7 +73,6 @@ function getButton_TypeSite(typeSite, htmlInsert) {
             break;
 
         case SiteEnum.TW_U_MANAGER_CLIPS:
-            json.imgWidth = 'width="90%"';
             json.extraSDStyle = 'margin-left: 5px;';
             json.extraMDStyle = "margin-left: 5px;";
             json.htmlInsert = json.htmlInsert.querySelector('div.tw-flex');

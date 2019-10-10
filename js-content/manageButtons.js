@@ -6,7 +6,8 @@ function setButtonData(typeSite, typeButton, slugEl, elInsert) {
     button = button.replace('{TRIGGER}', jsonButtonType.trigger + " " + slugEl);
     button = button.replace('{INFOS}', jsonButtonType.infos);
     button = button.replace('{IMG_URL}', jsonButtonType.imgURL);
-    button = button.replace('{IMG_WIDTH}', jsonSiteType.imgWidth);
+    button = button.replace('{IMG_WIDTH}', `width="${sizeButton}"`);
+    button = button.replace('{IMG_HEIGHT}', `height="${sizeButton}"`);
 
     let mTwitchClass = "mTwitchButtons";
 
@@ -38,7 +39,8 @@ function updateButQueue(slugEl, removeSlugQueue) {
 
                 resetSlugClass(element, slugEl);
                 element.title = infos;
-
+                element.width = sizeButton;
+                element.height = sizeButton;
                 element.src = urlsButtons.removeQueue;
             });
 
@@ -59,7 +61,8 @@ function updateButQueue(slugEl, removeSlugQueue) {
 
                 resetSlugClass(element, slugEl);
                 element.title = infos;
-
+                element.width = sizeButton;
+                element.height = sizeButton;
                 element.src = urlsButtons.addQueue;
             });
 

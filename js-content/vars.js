@@ -17,7 +17,7 @@ const SiteEnumList = [{
     queryReady: "div.preview-card"
 }, {
     name: SiteEnum.TW_U_CLIP_LIST_MENU,
-    queryReady: "div.tw-align-items-center.tw-flex.tw-full-height.tw-overflow-hidden:not(.tw-border-radius-rounded)"
+    queryReady: "div.tw-align-items-center > div.channel-header__right > div.tw-flex"
 }, {
     name: SiteEnum.TW_U_MANAGER_CLIPS,
     queryReady: "div.tw-align-items-center.tw-border-b.tw-c-background-alt.tw-flex.tw-justify-content-between.tw-pd-1"
@@ -39,8 +39,9 @@ const urlsButtons = {
     "removeQueue": "https://i.imgur.com/0HsqipO.png",
     "manageQueue": "https://i.imgur.com/aX9nHFZ.png"
 };
+const sizeButton = 30;
 
-const ButtonBase = '<a href="#"><img class="{TRIGGER}" {IMG_WIDTH} title="{INFOS}" src="{IMG_URL}" /></a></figure></div>';
+const ButtonBase = '<a href="#"><img class="{TRIGGER}" {IMG_WIDTH} {IMG_HEIGHT} title="{INFOS}" src="{IMG_URL}" /></a></figure></div>';
 const ButtonDiv = '<div class="tw-inline-block" style="{EXTRA_SD_STYLE}">' +
     '<div class="social-button"><div class="tw-inline-flex tw-tooltip-wrapper">' +
     '<div class="social-button__icon tw-align-items-center tw-flex tw-justify-content-center">' +

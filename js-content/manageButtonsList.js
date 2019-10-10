@@ -9,7 +9,7 @@ function setupButtonsClipsList(typeSite, navBar) {
 
     if (!navBar) return;
 
-    navBar.insertAdjacentHTML('afterbegin', '<div class="ButtonsClipsList" style="white-space: nowrap; margin-right: 15px;"></div>');
+    navBar.insertAdjacentHTML('afterbegin', '<div class="ButtonsClipsList" style="white-space: nowrap; margin-right: 100px;"></div>');
     navBar = navBar.querySelector('div.ButtonsClipsList');
     setButtonData(SiteEnum.TW_U_CLIP_LIST_MENU, BouttonsEnum.ADD_ALL_QUEUE, "addAllQueue", navBar);
     setButtonData(SiteEnum.TW_U_CLIP_LIST_MENU, BouttonsEnum.REMOVE_ALL_QUEUE, "removeAllQueue", navBar);
