@@ -12,11 +12,6 @@ var langs = {
         },
         "options": {
             "name": "Options",
-            "redirection": {
-                "description": "Redirection via l'icone (Sur un clip): ",
-                "general": "Page général (http://clips.maner.fr)",
-                "downloadMP4": "Téléchargement en MP4 (Meilleur qualité)"
-            },
             "langue": "Langue",
             "author": " ",
             "format": {
@@ -30,10 +25,6 @@ var langs = {
                 "date": {
                     "description": "Balise {DATE}: ",
                     "listeFormat": "Liste de mise en forme disponible pour la balise DATE"
-                },
-                "tempsVOD": {
-                    "description": "Balise {TEMPS_VOD}: ",
-                    "infosItalic": "Indiquez ici le formatage de la balise lorsqu'il n'y a pas de VOD pour un clip"
                 }
             },
             "boutons": {
@@ -79,12 +70,10 @@ var langs = {
         "formatFile": [
             "{CLIPEUR}",
             "{DATE}",
-            "{DUREE}",
             "{JEU}",
             "{NOMBRE}",
             "{SLUG}",
             "{STREAMEUR}",
-            "{TEMPS_VOD}",
             "{TITRE}",
             "{VUES}"
         ]
@@ -101,11 +90,6 @@ var langs = {
         },
         "options": {
             "name": "Settings",
-            "redirection": {
-                "description": "Redirection from the icon (On a clip): ",
-                "general": "General page (http://clips.maner.fr)",
-                "downloadMP4": "Download in MP4 (Best quality)"
-            },
             "langue": "Language",
             "author": " ",
             "format": {
@@ -119,10 +103,6 @@ var langs = {
                 "date": {
                     "description": "{DATE} tag: ",
                     "listeFormat": "Formatting list available for the DATE Tag"
-                },
-                "tempsVOD": {
-                    "description": "{TIME_VOD} tag: ",
-                    "infosItalic": "Specify here the formatting of the tag when there is no VOD for a clip"
                 }
             },
             "boutons": {
@@ -168,12 +148,10 @@ var langs = {
         "formatFile": [
             "{CLIPPER}",
             "{DATE}",
-            "{DURATION}",
             "{GAME}",
-            "{NUMBRE}",
+            "{NUMBER}",
             "{SLUG}",
             "{STREAMER}",
-            "{TIME_VOD}",
             "{TITLE}",
             "{VIEWS}"
         ]
@@ -190,11 +168,6 @@ var langs = {
         },
         "options": {
             "name": "설정",
-            "redirection": {
-                "description": "아이콘에서 리다이렉션 (클립에서): ",
-                "general": "일반 페이지 (http://clips.maner.fr)",
-                "downloadMP4": "MP4 다운로드 (최고 품질)"
-            },
             "langue": "언어",
             "author": "번역: Dustwo",
             "format": {
@@ -208,10 +181,6 @@ var langs = {
                 "date": {
                     "description": "{DATE} 태그: ",
                     "listeFormat": "DATE 태그에서 가능한 규칙 목록"
-                },
-                "tempsVOD": {
-                    "description": "{TIME_VOD} 태그: ",
-                    "infosItalic": "VOD가 없을 경우 규칙을 지정하세요.(VOD가 삭제된 경우 시간이 표시되지 않을 수 있습니다.)"
                 }
             },
             "boutons": {

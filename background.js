@@ -61,16 +61,7 @@ chrome.browserAction.onClicked.addListener(function (cTab) {
 			path: "images/icon_valid.png"
 		});
 
-		chrome.storage.local.get({
-			redirection: false
-		}, function (items) {
-			if (items.redirection)
-				downloadMP4(slug);
-			else
-				chrome.tabs.update(tab.id, {
-					url: 'http://clips.maner.fr/?clips=' + slug
-				});
-		});
+		downloadMP4(slug);
 	});
 });
 
@@ -96,21 +87,20 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 				isDuplicate: true
 			});
 		} else {
-			fetch("https://clips.twitch.tv/api/v2/clips/" + request.slug)
-				.then(function (res) {
-					return res.json();
-				})
-				.then(function (js) {
+			fetchClips(request.slug)
+				.then(js => {
+					const data = js.data[0];
 					queueClips[queueClips.length] = {
-						"slug": request.slug,
-						"url": js.preview_image,
-						"title": js.title
+						"slug": data.id,
+						"url": data.thumbnail_url,
+						"mp4": data.thumbnail_url.split('-preview-')[0] + ".mp4",
+						"title": data.title
 					};
 
 					sendToAllTabs({
 						greeting: "queue-update",
 						type: "add",
-						slugEl: request.slug,
+						slugEl: data.id,
 						isDuplicate: true
 					});
 
@@ -135,6 +125,16 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 		});
 	}
 });
+
+async function fetchClips(slug) {
+	const headers = new Headers();
+	headers.append("Client-ID", "klilujwcw6vkdkyyukc4kmptfevkil");
+
+	return fetch(`https://api.twitch.tv/helix/clips?id=${slug}`, {
+		method: 'GET',
+		headers: headers
+	}).then(res => res.json());
+}
 
 function removeSlugInfo(slugValue) {
 	for (let i = 0; i < queueClips.length; i++)

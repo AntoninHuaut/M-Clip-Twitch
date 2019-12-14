@@ -82,14 +82,11 @@ function loadClips(slug, type) {
             let clipDiv = document.createElement('div');
             document.getElementById('clipsList').appendChild(clipDiv);
 
-            if (previewType)
-                fetch("https://clips.twitch.tv/api/v2/clips/" + clip.slug + "/status").then(res => {
-                    return res.json();
-                }).then(js => {
-                    let url = js.quality_options[0].source;
-                    addClipBlock(clipDiv, clipPreview.replace('{VIDEO_SRC}', url), clip.slug);
-                });
-            else
+            if (previewType) {
+                let url = queueClips[i].mp4;
+                if (!url) url = "";
+                addClipBlock(clipDiv, clipPreview.replace('{VIDEO_SRC}', url), clip.slug);
+            } else
                 addClipBlock(clipDiv, clipPreview, clip.slug);
         }
 
@@ -151,8 +148,6 @@ function removeClipBlock(element, slug) {
         element = document.getElementById('DIV_' + slug);
     else
         slug = element.id.replace('DIV_', '');
-
-    console.log(!element);
 
     if (!!element)
         element.parentNode.removeChild(element);

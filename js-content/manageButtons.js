@@ -39,8 +39,6 @@ function updateButQueue(slugEl, removeSlugQueue) {
 
                 resetSlugClass(element, slugEl);
                 element.title = infos;
-                element.width = sizeButton;
-                element.height = sizeButton;
                 element.src = urlsButtons.removeQueue;
             });
 
@@ -61,8 +59,6 @@ function updateButQueue(slugEl, removeSlugQueue) {
 
                 resetSlugClass(element, slugEl);
                 element.title = infos;
-                element.width = sizeButton;
-                element.height = sizeButton;
                 element.src = urlsButtons.addQueue;
             });
 
