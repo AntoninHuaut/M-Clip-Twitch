@@ -30,9 +30,11 @@ function downloadMP4(slug) {
 			chrome.storage.local.get({
 				formatMP4: "{STREAMER}.{GAME} {TITLE}",
 				formatDate: "DD-MM-YYYY"
-			}, function (items) {
+			}, async function (items) {
+				const gameName = (await getGameNameById(data.game_id)).data[0].name;
+
 				const replaces = [data.creator_name, moment(new Date(data.created_at)).format(items.formatDate),
-					data.game_id, increment, data.id, data.broadcaster_name, data.title, data.view_count
+					gameName, increment, data.id, data.broadcaster_name, data.title, data.view_count
 				];
 
 				let fileName = items.formatMP4.rep(replaces).replace(/[\/\\\*\?\<\>\:\"\|\~]/g, '_'); // Deleting characters that prevent the file from being saved.
@@ -46,6 +48,16 @@ function downloadMP4(slug) {
 				increment++;
 			});
 		});
+}
+
+function getGameNameById(gameId) {
+	const headers = new Headers();
+	headers.append("Client-ID", clientID);
+
+	return fetch(`https://api.twitch.tv/helix/games?id=${gameId}`, {
+		method: 'GET',
+		headers: headers
+	}).then(res => res.json());
 }
 
 String.prototype.rep = function (replaces) {

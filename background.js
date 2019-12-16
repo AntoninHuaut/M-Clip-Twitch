@@ -1,5 +1,6 @@
 moment.locale(navigator.language || navigator.userLanguage);
 
+const clientID = 'klilujwcw6vkdkyyukc4kmptfevkil';
 var delay = null;
 var lang;
 var queueClips = [];
@@ -128,7 +129,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
 async function fetchClips(slug) {
 	const headers = new Headers();
-	headers.append("Client-ID", "klilujwcw6vkdkyyukc4kmptfevkil");
+	headers.append("Client-ID", clientID);
 
 	return fetch(`https://api.twitch.tv/helix/clips?id=${slug}`, {
 		method: 'GET',
