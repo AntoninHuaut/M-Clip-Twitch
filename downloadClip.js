@@ -50,14 +50,22 @@ function downloadMP4(slug) {
 		});
 }
 
-function getGameNameById(gameId) {
+async function getGameNameById(gameId) {
 	const headers = new Headers();
 	headers.append("Client-ID", clientID);
 
-	return fetch(`https://api.twitch.tv/helix/games?id=${gameId}`, {
+	const data = await fetch(`https://api.twitch.tv/helix/games?id=${gameId}`, {
 		method: 'GET',
 		headers: headers
 	}).then(res => res.json());
+
+	if (data.length) return data;
+
+	return {
+		data: [{
+			name: ""
+		}]
+	}
 }
 
 String.prototype.rep = function (replaces) {
