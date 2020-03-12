@@ -68,7 +68,7 @@ function getButton_TypeSite(typeSite, htmlInsert) {
         case SiteEnum.TW_U_CLIP_LIST:
             json.extraSDStyle = 'margin-right: 5px;';
             json.extraMDStyle = "margin-top: 0.5vh;"
-            json.htmlInsert = json.htmlInsert.querySelector("div.preview-card__titles-wrapper.tw-flex-grow-1.tw-flex-shrink-1.tw-full-width").querySelector("div");
+            json.htmlInsert = json.htmlInsert.querySelector("article>div>div>.tw-flex-grow-1.tw-flex-shrink-1.tw-full-width").querySelector("div.tw-media-card-meta__links");
             json.insertIndex = json.htmlInsert.children.length - 1;
             break;
 

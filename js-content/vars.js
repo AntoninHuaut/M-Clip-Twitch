@@ -14,7 +14,7 @@ const SiteEnumList = [{
     queryReady: "div.tw-align-items-center.tw-flex.tw-flex-row.tw-flex-shrink-0.tw-full-height.tw-pd-1.video-info-bar__action-container"
 }, {
     name: SiteEnum.TW_U_CLIP_LIST,
-    queryReady: "div.preview-card"
+    queryReady: "div.tw-mg-b-2"
 }, {
     name: SiteEnum.TW_U_CLIP_LIST_MENU,
     queryReady: "div.tw-align-items-center > div.channel-header__right > div.tw-flex"
