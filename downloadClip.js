@@ -50,14 +50,20 @@ function downloadMP4(slug) {
 		});
 }
 
-async function getGameNameById(gameId) {
+async function getGameNameById(gameId, retry = false) {
 	const headers = new Headers();
 	headers.append("Client-ID", clientID);
+	headers.append("Authorization", "Bearer " + access_token);
 
 	const data = await fetch(`https://api.twitch.tv/helix/games?id=${gameId}`, {
 		method: 'GET',
 		headers: headers
 	}).then(res => res.json());
+
+	const isValidToken = await verifyAccessToken(data);
+
+	if (!retry && !isValidToken)
+		return getGameNameById(gameId, true);
 
 	if (data.length) return data;
 

@@ -4,11 +4,13 @@ const clientID = 'klilujwcw6vkdkyyukc4kmptfevkil';
 var delay = null;
 var lang;
 var queueClips = [];
+var access_token;
 
 // Load storage
 chrome.storage.local.get({
 	language: "en",
-	queueClips: []
+	queueClips: [],
+	access_token: null
 }, function (items) {
 	if (typeof (items.language) == "boolean") // CONVERSION ANCIENNE VERSION EXTENSION
 		chrome.storage.local.set({
@@ -20,11 +22,18 @@ chrome.storage.local.get({
 		lang = items.language;
 
 	queueClips = items.queueClips;
+	access_token = items.access_token;
 });
 
 function saveQueueClips() {
 	chrome.storage.local.set({
 		queueClips: queueClips
+	});
+}
+
+function saveAccessToken() {
+	chrome.storage.local.set({
+		access_token: access_token
 	});
 }
 
@@ -90,6 +99,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 		} else {
 			fetchClips(request.slug)
 				.then(js => {
+					console.log(js)
 					const data = js.data[0];
 					queueClips[queueClips.length] = {
 						"slug": data.id,
@@ -127,14 +137,35 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 	}
 });
 
-async function fetchClips(slug) {
+async function fetchClips(slug, retry = false) {
 	const headers = new Headers();
 	headers.append("Client-ID", clientID);
+	headers.append("Authorization", "Bearer " + access_token);
 
-	return fetch(`https://api.twitch.tv/helix/clips?id=${slug}`, {
+	const res = await fetch(`https://api.twitch.tv/helix/clips?id=${slug}`, {
 		method: 'GET',
 		headers: headers
 	}).then(res => res.json());
+
+	const isValidToken = await verifyAccessToken(res);
+
+	if (!retry && !isValidToken)
+		return fetchClips(slug, true);
+
+	return res;
+}
+
+async function verifyAccessToken(res) {
+	if (!res.error) return true;
+
+	const tokenRes = await fetch(`https://php.maner.fr/MClipTwitch_getToken.php`, {
+		method: 'GET'
+	}).then(res => res.json());
+
+	access_token = tokenRes.access_token;
+	saveAccessToken();
+
+	return false;
 }
 
 function removeSlugInfo(slugValue) {
