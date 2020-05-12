@@ -13,9 +13,6 @@ function onPartReady(htmlElement, typeSiteList) {
         case SiteEnum.TW_U_CLIP:
             slug = getSlugURL(location.href);
             break;
-        case SiteEnum.TW_U_MANAGER_CLIPS:
-            slug = getSlugURL(document.querySelector('.tw-aspect.tw-aspect--align-top iframe').src);
-            break;
         case SiteEnum.TW_U_CLIP_LIST:
             slug = getSlugURL(htmlElement.querySelector('a.tw-interactive.tw-link').href);
             break;

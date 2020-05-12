@@ -2,8 +2,7 @@ const SiteEnum = {
     CLIPS_TW: "CLIPS_TW",
     TW_U_CLIP: "TW_U_CLIP",
     TW_U_CLIP_LIST: "TW_U_CLIP_LIST",
-    TW_U_CLIP_LIST_MENU: "TW_U_CLIP_LIST_MENU",
-    TW_U_MANAGER_CLIPS: "TW_U_MANAGER_CLIPS"
+    TW_U_CLIP_LIST_MENU: "TW_U_CLIP_LIST_MENU"
 }
 
 const SiteEnumList = [{
@@ -11,16 +10,13 @@ const SiteEnumList = [{
     queryReady: "div.tw-align-items-center.tw-flex.tw-justify-content-end.tw-mg-y-1.tw-relative.tw-z-above"
 }, {
     name: SiteEnum.TW_U_CLIP,
-    queryReady: "div.tw-align-items-center.tw-flex.tw-flex-row.tw-flex-shrink-0.tw-full-height.tw-pd-1.video-info-bar__action-container"
+    queryReady: "div.tw-align-items-start.tw-flex > div.tw-mg-l-1 > div.tw-flex.tw-flex-column"
 }, {
     name: SiteEnum.TW_U_CLIP_LIST,
     queryReady: "div.tw-mg-b-2"
 }, {
     name: SiteEnum.TW_U_CLIP_LIST_MENU,
     queryReady: "div.tw-align-items-center > div.channel-header__right > div.tw-flex"
-}, {
-    name: SiteEnum.TW_U_MANAGER_CLIPS,
-    queryReady: "div.tw-align-items-center.tw-border-b.tw-c-background-alt.tw-flex.tw-justify-content-between.tw-pd-1"
 }];
 
 const BouttonsEnum = {

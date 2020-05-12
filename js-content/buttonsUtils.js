@@ -72,15 +72,6 @@ function getButton_TypeSite(typeSite, htmlInsert) {
             json.insertIndex = json.htmlInsert.children.length - 1;
             break;
 
-        case SiteEnum.TW_U_MANAGER_CLIPS:
-            json.extraSDStyle = 'margin-left: 5px;';
-            json.extraMDStyle = "margin-left: 5px;";
-            json.htmlInsert = json.htmlInsert.querySelector('div.tw-flex');
-            json.htmlInsert.childNodes[json.htmlInsert.childNodes.length - 1].classList.remove("tw-inline-flex");
-            json.htmlInsert.childNodes[json.htmlInsert.childNodes.length - 1].classList.remove("tw-tooltip-wrapper");
-            json.htmlInsert.insertIndex = json.htmlInsert.children.length - 1;
-            break;
-
         case SiteEnum.TW_U_CLIP_LIST_MENU:
             json.extraSDStyle = 'margin-left: 10px;';
             break;
