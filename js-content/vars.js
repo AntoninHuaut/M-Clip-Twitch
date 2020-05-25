@@ -10,7 +10,7 @@ const SiteEnumList = [{
     queryReady: "div.tw-align-items-center.tw-flex.tw-justify-content-end.tw-mg-y-1.tw-relative.tw-z-above"
 }, {
     name: SiteEnum.TW_U_CLIP,
-    queryReady: "div.tw-align-items-start.tw-flex > div.tw-mg-l-1 > div.tw-flex.tw-flex-column"
+    queryReady: "div.tw-align-items-baseline.tw-flex > div.tw-justify-content-end.tw-flex"
 }, {
     name: SiteEnum.TW_U_CLIP_LIST,
     queryReady: "div.tw-mg-b-2"
