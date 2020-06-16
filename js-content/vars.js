@@ -16,7 +16,7 @@ const SiteEnumList = [{
     queryReady: "div.tw-mg-b-2"
 }, {
     name: SiteEnum.TW_U_CLIP_LIST_MENU,
-    queryReady: "div.tw-align-items-center > div.channel-header__right > div.tw-flex"
+    queryReady: "div.tw-align-items-center.tw-mg-b-2 > div.tw-align-items-center.tw-flex"
 }];
 
 const BouttonsEnum = {
